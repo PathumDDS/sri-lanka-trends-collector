@@ -8,6 +8,7 @@
 import os, time, csv
 from datetime import datetime
 import pandas as pd
+import random
 
 from pytrends.request import TrendReq
 
@@ -68,7 +69,19 @@ def main():
     block = select_block(kws, KEYWORDS_PER_RUN)
     print("This run will fetch keywords:", block)
 
-    pytrends = TrendReq(hl='en-US', tz=330)  # Sri Lanka tz +5:30
+    # Optional proxy list (add several)
+PROXIES = [
+    'https://144.91.78.203:3128',
+    'https://51.158.154.173:3128',
+    'https://195.154.255.194:8000',
+    'https://134.209.29.120:8080',
+    'https://94.130.179.24:8000',
+]
+
+proxy = random.choice(PROXIES)
+print(f"Using proxy: {proxy}")
+pytrends = TrendReq(hl='en-US', tz=330, proxies=[proxy])
+
 
     os.makedirs("data", exist_ok=True)
     fetched_files = []
