@@ -1,1 +1,109 @@
+jobs
+unemployment
+job vacancies
+recruitment
+foreign employment
+job interview
+government jobs
+part time jobs
+resignation
+restaurants
+supermarket
+food delivery
+grocery
+clothing
+online shopping
+sale
+furniture
+shoes
+electronics
+mobile phone
+loan
+bank
+mortgage
+interest rate
+credit card
+debt
+savings account
+atm
+money transfer
+finance company
+inflation
+price increase
+exchange rate
+rupee
+petrol price
+gold price
+electricity bill
+gas price
+cost of living
+food price
+investment
+share market
+stock market
+business registration
+startup
+foreign investment
+entrepreneurship
+export
+import
+manufacturing
+real estate
+land
+house for sale
+rent
+apartment
+construction
+property loan
+housing loan
+building materials
+architect
+tourism
+flight
+hotel
+visa
+travel agency
+tour package
+airport
+beach
+holiday
+tourist
+vehicle
+car
+bus
+train
+fuel
+motorcycle
+taxi
+petrol
+traffic
+driving license
+agriculture
+fertilizer
+tea price
+paddy
+harvest
+farming
+crop
+drought
+rainfall
+irrigation
+economic crisis
+bankruptcy
+poverty
+interest rate hike
+recession
+budget
+central bank
+inflation rate
+currency depreciation
+imf
+retail sales
+consumer confidence
+manufacturing pmi
+industrial production
+electricity consumption
+tourist arrivals
+online bookings
+hotel occupancy
 
