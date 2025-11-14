@@ -25,6 +25,11 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytrends pandas
 
+      # NEW: Sync master -> update unprocessed / processed / failed / delete removed keywords
+      - name: Sync master and cleanup
+        run: |
+          python script/sync_master_and_cleanup.py
+
       - name: Run fetch_one_keyword
         id: fetch
         run: |
