@@ -1,4 +1,3 @@
-atm
 bank
 bankruptcy
 beach
