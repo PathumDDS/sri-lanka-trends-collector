@@ -41,3 +41,4 @@ government jobs
 grocery
 harvest
 holiday
+hotel
