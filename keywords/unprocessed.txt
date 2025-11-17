@@ -1,4 +1,3 @@
-architect
 atm
 bank
 bankruptcy
