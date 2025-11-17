@@ -32,3 +32,4 @@ flight
 food delivery
 food price
 foreign employment
+foreign investment
