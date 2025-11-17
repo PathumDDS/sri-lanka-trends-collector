@@ -34,3 +34,4 @@ food price
 foreign employment
 foreign investment
 fuel
+furniture
