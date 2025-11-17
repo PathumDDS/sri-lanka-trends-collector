@@ -1,4 +1,3 @@
-airport
 apartment
 architect
 atm
