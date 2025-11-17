@@ -143,3 +143,11 @@
 2025-11-17 14:59:15 UTC - FAILED for economic crisis: error_final: The request failed: Google returned a response with code 429
 2025-11-17 14:59:15 UTC - Run finished.
 
+2025-11-17 15:18:37 UTC - Selected keyword: electricity bill
+2025-11-17 15:18:38 UTC - Attempt 1 failed for 'electricity bill': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-17 15:19:38 UTC - Attempt 2 failed for 'electricity bill': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-17 15:21:38 UTC - Attempt 3 failed for 'electricity bill': The request failed: Google returned a response with code 429. Backing off 240s
+2025-11-17 15:25:39 UTC - Attempt 4 failed for 'electricity bill': The request failed: Google returned a response with code 429. Backing off 480s
+2025-11-17 15:33:39 UTC - FAILED for electricity bill: error_final: The request failed: Google returned a response with code 429
+2025-11-17 15:33:39 UTC - Run finished.
+
