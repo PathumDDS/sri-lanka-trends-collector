@@ -4,3 +4,4 @@ apartment
 architect
 atm
 bank
+bankruptcy
