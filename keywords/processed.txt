@@ -27,3 +27,4 @@ exchange rate
 export
 farming
 fertilizer
+finance company
