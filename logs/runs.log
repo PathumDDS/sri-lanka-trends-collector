@@ -40,3 +40,10 @@
 2025-11-17 07:17:52 UTC - SUCCESS: beach
 2025-11-17 07:17:52 UTC - Run finished.
 
+2025-11-17 07:38:59 UTC - Selected keyword: budget
+2025-11-17 07:38:59 UTC - Attempt 1 failed for 'budget': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-17 07:40:00 UTC - Attempt 2 failed for 'budget': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-17 07:42:00 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/budget_20251117_0742.csv
+2025-11-17 07:42:00 UTC - SUCCESS: budget
+2025-11-17 07:42:00 UTC - Run finished.
+

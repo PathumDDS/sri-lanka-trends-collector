@@ -6,3 +6,4 @@ atm
 bank
 bankruptcy
 beach
+budget
