@@ -1,4 +1,3 @@
-grocery
 harvest
 holiday
 hotel
