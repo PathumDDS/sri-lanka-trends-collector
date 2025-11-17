@@ -1,4 +1,3 @@
-holiday
 hotel
 hotel occupancy
 house for sale
