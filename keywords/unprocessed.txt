@@ -1,4 +1,3 @@
-apartment
 architect
 atm
 bank
