@@ -58,3 +58,9 @@
 2025-11-17 08:24:18 UTC - SUCCESS: bus
 2025-11-17 08:24:18 UTC - Run finished.
 
+2025-11-17 08:49:47 UTC - Selected keyword: business registration
+2025-11-17 08:49:47 UTC - Attempt 1 failed for 'business registration': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-17 08:50:48 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/business_registration_20251117_0850.csv
+2025-11-17 08:50:48 UTC - SUCCESS: business registration
+2025-11-17 08:50:48 UTC - Run finished.
+
