@@ -14,3 +14,4 @@ car
 central bank
 clothing
 construction
+consumer confidence
