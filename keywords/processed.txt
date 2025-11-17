@@ -20,3 +20,4 @@ credit card
 crop
 currency depreciation
 debt
+drought
