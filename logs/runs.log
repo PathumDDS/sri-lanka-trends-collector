@@ -110,3 +110,12 @@
 2025-11-17 12:34:18 UTC - SUCCESS: currency depreciation
 2025-11-17 12:34:18 UTC - Run finished.
 
+2025-11-17 13:20:50 UTC - Selected keyword: debt
+2025-11-17 13:20:51 UTC - Attempt 1 failed for 'debt': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-17 13:21:51 UTC - Attempt 2 failed for 'debt': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-17 13:23:51 UTC - Attempt 3 failed for 'debt': The request failed: Google returned a response with code 429. Backing off 240s
+2025-11-17 13:27:52 UTC - Attempt 4 failed for 'debt': The request failed: Google returned a response with code 429. Backing off 480s
+2025-11-17 13:35:53 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/debt_20251117_1335.csv
+2025-11-17 13:35:53 UTC - SUCCESS: debt
+2025-11-17 13:35:53 UTC - Run finished.
+
