@@ -2,7 +2,7 @@ name: Google Trends - Fetch and Merge
 
 on:
   schedule:
-    - cron: '*/15 * * * *'   # every 15 minutes
+    - cron: '*/15 * * * *'
   workflow_dispatch:
 
 jobs:
@@ -25,7 +25,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install pytrends pandas
 
-      # NEW: Sync master -> update unprocessed / processed / failed / delete removed keywords
       - name: Sync master and cleanup
         run: |
           python script/sync_master_and_cleanup.py
@@ -68,28 +67,27 @@ jobs:
             Repository: ${{ github.repository }}
             Run ID: ${{ github.run_id }}
 
-            ### SUMMARY:
-            - Workflow: ${{ github.workflow }}
-            - Event: ${{ github.event_name }}
-            - Commit: ${{ github.sha }}
+            SUMMARY:
+              Workflow: ${{ github.workflow }}
+              Event: ${{ github.event_name }}
+              Commit: ${{ github.sha }}
 
-            ### LAST 20 LOG ENTRIES:
+            LAST 20 LOG ENTRIES:
             -------------------------------------
             $(tail -n 20 logs/runs.log || true)
 
-            ### FILE SYSTEM STATUS:
+            FILE SYSTEM STATUS:
             -------------------------------------
             $(ls -R data/raw || true)
 
-            ### MERGED OUTPUT:
+            MERGED OUTPUT:
             -------------------------------------
             $(ls data/merged || true)
 
-            ### KEYWORD STATUS:
-            processed: $(wc -l < keywords/processed.txt)
-            unprocessed: $(wc -l < keywords/unprocessed.txt)
-            failed: $(wc -l < keywords/failed.txt)
+            KEYWORD STATUS:
+              processed: $(wc -l < keywords/processed.txt)
+              unprocessed: $(wc -l < keywords/unprocessed.txt)
+              failed: $(wc -l < keywords/failed.txt)
 
-            ### ACTION LOG:
-            See run details here:
+            ACTION LOG:
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
