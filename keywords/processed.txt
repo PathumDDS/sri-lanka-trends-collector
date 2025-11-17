@@ -24,3 +24,4 @@ drought
 electricity consumption
 entrepreneurship
 exchange rate
+export
