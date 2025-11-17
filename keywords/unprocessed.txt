@@ -1,4 +1,3 @@
-gas price
 gold price
 government jobs
 grocery
