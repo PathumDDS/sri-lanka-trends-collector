@@ -206,3 +206,9 @@
 2025-11-17 19:27:55 UTC - SUCCESS: food delivery
 2025-11-17 19:27:55 UTC - Run finished.
 
+2025-11-17 19:39:00 UTC - Selected keyword: food price
+2025-11-17 19:39:01 UTC - Attempt 1 failed for 'food price': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-17 19:40:01 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/food_price_20251117_1940.csv
+2025-11-17 19:40:01 UTC - SUCCESS: food price
+2025-11-17 19:40:01 UTC - Run finished.
+
