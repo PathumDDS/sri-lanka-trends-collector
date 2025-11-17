@@ -21,3 +21,4 @@ crop
 currency depreciation
 debt
 drought
+electricity consumption
