@@ -37,3 +37,4 @@ fuel
 furniture
 gas price
 gold price
+government jobs
