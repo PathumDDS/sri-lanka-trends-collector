@@ -3,3 +3,4 @@ airport
 apartment
 architect
 atm
+bank

@@ -1,4 +1,3 @@
-bank
 bankruptcy
 beach
 budget
