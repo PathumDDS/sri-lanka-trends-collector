@@ -99,3 +99,9 @@
 2025-11-17 11:30:22 UTC - SUCCESS: credit card
 2025-11-17 11:30:22 UTC - Run finished.
 
+2025-11-17 11:49:47 UTC - Selected keyword: crop
+2025-11-17 11:49:47 UTC - Attempt 1 failed for 'crop': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-17 11:50:48 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/crop_20251117_1150.csv
+2025-11-17 11:50:48 UTC - SUCCESS: crop
+2025-11-17 11:50:48 UTC - Run finished.
+
