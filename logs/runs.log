@@ -491,3 +491,11 @@
 2025-11-18 17:53:54 UTC - SUCCESS: restaurants
 2025-11-18 17:53:54 UTC - Run finished.
 
+2025-11-18 18:24:50 UTC - Selected keyword: retail sales
+2025-11-18 18:24:51 UTC - Attempt 1 failed for 'retail sales': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-18 18:25:51 UTC - Attempt 2 failed for 'retail sales': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-18 18:27:52 UTC - Attempt 3 failed for 'retail sales': The request failed: Google returned a response with code 429. Backing off 240s
+2025-11-18 18:31:52 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/retail_sales_20251118_1831.csv
+2025-11-18 18:31:52 UTC - SUCCESS: retail sales
+2025-11-18 18:31:52 UTC - Run finished.
+
