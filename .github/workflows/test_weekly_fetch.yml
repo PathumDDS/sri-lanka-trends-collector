@@ -1,0 +1,39 @@
+name: Test Weekly Fetch
+
+on:
+  workflow_dispatch:
+    inputs:
+      keyword:
+        description: 'Keyword to fetch (use exact phrase as in all_keywords.txt)'
+        required: true
+        default: 'agriculture'
+
+jobs:
+  test-weekly:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytrends pandas matplotlib
+
+      - name: Run weekly fetch for keyword
+        run: |
+          python script/fetch_weekly_keyword.py "${{ github.event.inputs.keyword }}"
+
+      - name: Upload preview and CSV as workflow artifacts (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: weekly-artifacts-${{ github.event.inputs.keyword }}
+          path: |
+            data/raw_windows/**
+            data/raw_weekly/**
+            data/preview/**
