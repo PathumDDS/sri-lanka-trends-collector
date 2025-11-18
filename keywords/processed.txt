@@ -62,3 +62,4 @@ loan
 manufacturing
 manufacturing pmi
 mobile phone
+money transfer
