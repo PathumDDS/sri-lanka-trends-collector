@@ -418,3 +418,11 @@
 2025-11-18 14:02:57 UTC - FAILED for petrol price: error_final: The request failed: Google returned a response with code 429
 2025-11-18 14:02:57 UTC - Run finished.
 
+2025-11-18 14:16:31 UTC - Selected keyword: poverty
+2025-11-18 14:16:32 UTC - Attempt 1 failed for 'poverty': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-18 14:17:32 UTC - Attempt 2 failed for 'poverty': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-18 14:19:33 UTC - Attempt 3 failed for 'poverty': The request failed: Google returned a response with code 429. Backing off 240s
+2025-11-18 14:23:33 UTC - Attempt 4 failed for 'poverty': The request failed: Google returned a response with code 429. Backing off 480s
+2025-11-18 14:31:34 UTC - FAILED for poverty: error_final: The request failed: Google returned a response with code 429
+2025-11-18 14:31:34 UTC - Run finished.
+
