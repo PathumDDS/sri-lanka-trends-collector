@@ -479,3 +479,8 @@
 2025-11-18 17:31:14 UTC - FAILED for rent: error_final: The request failed: Google returned a response with code 429
 2025-11-18 17:31:14 UTC - Run finished.
 
+2025-11-18 17:41:22 UTC - Selected keyword: resignation
+2025-11-18 17:41:23 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/resignation_20251118_1741.csv
+2025-11-18 17:41:23 UTC - SUCCESS: resignation
+2025-11-18 17:41:23 UTC - Run finished.
+
