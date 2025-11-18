@@ -402,3 +402,11 @@
 2025-11-18 12:34:48 UTC - SUCCESS: part time jobs
 2025-11-18 12:34:48 UTC - Run finished.
 
+2025-11-18 13:20:34 UTC - Selected keyword: petrol
+2025-11-18 13:20:34 UTC - Attempt 1 failed for 'petrol': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-18 13:21:34 UTC - Attempt 2 failed for 'petrol': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-18 13:23:35 UTC - Attempt 3 failed for 'petrol': The request failed: Google returned a response with code 429. Backing off 240s
+2025-11-18 13:27:35 UTC - Attempt 4 failed for 'petrol': The request failed: Google returned a response with code 429. Backing off 480s
+2025-11-18 13:35:36 UTC - FAILED for petrol: error_final: The request failed: Google returned a response with code 429
+2025-11-18 13:35:36 UTC - Run finished.
+
