@@ -471,3 +471,11 @@
 2025-11-18 17:05:53 UTC - FAILED for recruitment: error_final: The request failed: Google returned a response with code 429
 2025-11-18 17:05:53 UTC - Run finished.
 
+2025-11-18 17:16:11 UTC - Selected keyword: rent
+2025-11-18 17:16:12 UTC - Attempt 1 failed for 'rent': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-18 17:17:12 UTC - Attempt 2 failed for 'rent': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-18 17:19:13 UTC - Attempt 3 failed for 'rent': The request failed: Google returned a response with code 429. Backing off 240s
+2025-11-18 17:23:13 UTC - Attempt 4 failed for 'rent': The request failed: Google returned a response with code 429. Backing off 480s
+2025-11-18 17:31:14 UTC - FAILED for rent: error_final: The request failed: Google returned a response with code 429
+2025-11-18 17:31:14 UTC - Run finished.
+
