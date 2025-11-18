@@ -1,4 +1,3 @@
-property loan
 rainfall
 real estate
 recession

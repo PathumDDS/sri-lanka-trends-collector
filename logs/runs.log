@@ -434,3 +434,11 @@
 2025-11-18 14:58:26 UTC - FAILED for price increase: error_final: The request failed: Google returned a response with code 429
 2025-11-18 14:58:26 UTC - Run finished.
 
+2025-11-18 15:18:31 UTC - Selected keyword: property loan
+2025-11-18 15:18:32 UTC - Attempt 1 failed for 'property loan': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-18 15:19:32 UTC - Attempt 2 failed for 'property loan': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-18 15:21:33 UTC - Attempt 3 failed for 'property loan': The request failed: Google returned a response with code 429. Backing off 240s
+2025-11-18 15:25:33 UTC - Attempt 4 failed for 'property loan': The request failed: Google returned a response with code 429. Backing off 480s
+2025-11-18 15:33:34 UTC - FAILED for property loan: error_final: The request failed: Google returned a response with code 429
+2025-11-18 15:33:34 UTC - Run finished.
+

@@ -6,3 +6,4 @@ petrol
 petrol price
 poverty
 price increase
+property loan
