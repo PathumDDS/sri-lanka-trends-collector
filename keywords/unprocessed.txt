@@ -1,4 +1,3 @@
-shoes
 startup
 stock market
 supermarket

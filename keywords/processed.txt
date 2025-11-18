@@ -77,3 +77,4 @@ rupee
 sale
 savings account
 share market
+shoes
