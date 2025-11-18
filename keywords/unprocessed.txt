@@ -1,4 +1,3 @@
-taxi
 tea price
 tour package
 tourism
