@@ -484,3 +484,10 @@
 2025-11-18 17:41:23 UTC - SUCCESS: resignation
 2025-11-18 17:41:23 UTC - Run finished.
 
+2025-11-18 17:50:52 UTC - Selected keyword: restaurants
+2025-11-18 17:50:53 UTC - Attempt 1 failed for 'restaurants': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-18 17:51:53 UTC - Attempt 2 failed for 'restaurants': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-18 17:53:54 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/restaurants_20251118_1753.csv
+2025-11-18 17:53:54 UTC - SUCCESS: restaurants
+2025-11-18 17:53:54 UTC - Run finished.
+
