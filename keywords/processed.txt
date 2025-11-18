@@ -74,3 +74,4 @@ resignation
 restaurants
 retail sales
 rupee
+sale
