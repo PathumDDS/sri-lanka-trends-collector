@@ -60,3 +60,4 @@ jobs
 land
 loan
 manufacturing
+manufacturing pmi
