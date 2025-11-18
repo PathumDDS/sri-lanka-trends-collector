@@ -83,3 +83,4 @@ stock market
 supermarket
 taxi
 tea price
+tour package
