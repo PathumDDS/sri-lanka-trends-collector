@@ -66,3 +66,4 @@ money transfer
 mortgage
 motorcycle
 online bookings
+online shopping
