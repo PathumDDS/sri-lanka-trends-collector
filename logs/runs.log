@@ -442,3 +442,8 @@
 2025-11-18 15:33:34 UTC - FAILED for property loan: error_final: The request failed: Google returned a response with code 429
 2025-11-18 15:33:34 UTC - Run finished.
 
+2025-11-18 15:44:05 UTC - Selected keyword: rainfall
+2025-11-18 15:44:06 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data/raw/rainfall_20251118_1544.csv
+2025-11-18 15:44:06 UTC - SUCCESS: rainfall
+2025-11-18 15:44:06 UTC - Run finished.
+
