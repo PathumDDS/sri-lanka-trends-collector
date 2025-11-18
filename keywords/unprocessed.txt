@@ -1,4 +1,3 @@
-land
 loan
 manufacturing
 manufacturing pmi
