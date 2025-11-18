@@ -48,3 +48,4 @@ housing loan
 imf
 import
 industrial production
+inflation
