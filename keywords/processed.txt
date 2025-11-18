@@ -86,3 +86,4 @@ tea price
 tour package
 tourism
 tourist
+tourist arrivals
