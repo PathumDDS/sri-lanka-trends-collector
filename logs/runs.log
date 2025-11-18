@@ -426,3 +426,11 @@
 2025-11-18 14:31:34 UTC - FAILED for poverty: error_final: The request failed: Google returned a response with code 429
 2025-11-18 14:31:34 UTC - Run finished.
 
+2025-11-18 14:43:24 UTC - Selected keyword: price increase
+2025-11-18 14:43:24 UTC - Attempt 1 failed for 'price increase': The request failed: Google returned a response with code 429. Backing off 60s
+2025-11-18 14:44:25 UTC - Attempt 2 failed for 'price increase': The request failed: Google returned a response with code 429. Backing off 120s
+2025-11-18 14:46:25 UTC - Attempt 3 failed for 'price increase': The request failed: Google returned a response with code 429. Backing off 240s
+2025-11-18 14:50:25 UTC - Attempt 4 failed for 'price increase': The request failed: Google returned a response with code 429. Backing off 480s
+2025-11-18 14:58:26 UTC - FAILED for price increase: error_final: The request failed: Google returned a response with code 429
+2025-11-18 14:58:26 UTC - Run finished.
+
