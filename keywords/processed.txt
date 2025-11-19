@@ -92,3 +92,4 @@ train
 travel agency
 unemployment
 vehicle
+visa
