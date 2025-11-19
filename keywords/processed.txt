@@ -89,3 +89,4 @@ tourist
 tourist arrivals
 traffic
 train
+travel agency
