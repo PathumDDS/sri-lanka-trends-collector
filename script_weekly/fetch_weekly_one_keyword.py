@@ -8,9 +8,10 @@ from pytrends.request import TrendReq
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 KW_DIR = os.path.join(ROOT, "keywords_weekly")
-RAW_WINDOWS = os.path.join(ROOT, "data", "raw_windows")
-RAW_WEEKLY = os.path.join(ROOT, "data", "raw_weekly")
-LOGS = os.path.join(ROOT, "logs")
+RAW_WINDOWS = os.path.join(ROOT, "data_weekly", "raw_windows")
+RAW_WEEKLY = os.path.join(ROOT, "data_weekly", "raw_weekly")
+LOGS = os.path.join(ROOT, "logs_weekly")
+os.makedirs(LOGS, exist_ok=True)
 
 os.makedirs(RAW_WINDOWS, exist_ok=True)
 os.makedirs(RAW_WEEKLY, exist_ok=True)
