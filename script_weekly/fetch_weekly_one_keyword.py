@@ -34,7 +34,7 @@ TODAY = datetime.utcnow().date()
 MAX_RETRIES = 5
 BACKOFF = 60
 
-# ----------------- Load topics_master.txt -----------------
+# ----------------- Load topics_master.txt (optional) -----------------
 TOPICS_MASTER = os.path.join(KW_DIR, "topics_master.txt")
 topic_id_to_name = {}
 if os.path.exists(TOPICS_MASTER):
@@ -55,40 +55,60 @@ def log(msg):
 
 
 def append_line(path, line):
-    with open(path, "a") as f:
+    with open(path, "a", encoding="utf-8") as f:
         f.write(line + "\n")
 
 
 def pop_keyword():
+    """
+    Pop the first non-empty line from unprocessed.txt.
+    Expect lines to be tab-separated: "<topic_id>\t<topic_name>"
+    Return (topic_id, topic_name) or (None, None) if none.
+    """
     if not os.path.exists(UNPRO):
-        return None
-    with open(UNPRO, "r") as f:
-        lines = [l.strip() for l in f if l.strip()]
+        return None, None
+    with open(UNPRO, "r", encoding="utf-8") as f:
+        lines = [l.rstrip("\n") for l in f if l.strip()]
     if not lines:
-        return None
-    kw = lines[0]
+        return None, None
+    first = lines[0].strip()
     rest = lines[1:]
-    with open(UNPRO, "w") as f:
+    # Rewrite remaining lines back
+    with open(UNPRO, "w", encoding="utf-8") as f:
         for r in rest:
             f.write(r + "\n")
-    return kw
+    # Parse the popped line
+    if "\t" in first:
+        parts = first.split("\t", 1)
+        topic_id = parts[0].strip()
+        topic_name = parts[1].strip()
+    else:
+        # If no tab present, treat whole as id and fallback name = id
+        topic_id = first
+        topic_name = first
+    return topic_id, topic_name
 
 
-def save_status_move(keyword, target):
-    for file in [PROCING]:
-        if os.path.exists(file):
-            with open(file, "r") as f:
-                lines = [l.strip() for l in f if l.strip() != keyword]
-            with open(file, "w") as f:
-                for l in lines:
-                    f.write(l + "\n")
-    append_line(target, keyword)
+def save_status_move(keyword_line, target):
+    """
+    keyword_line: full line as stored in files (e.g. "<topic_id>\t<topic_name>")
+    target: path to append to
+    Also remove the line from processing.txt if present.
+    """
+    # remove from processing file if exists
+    if os.path.exists(PROCING):
+        with open(PROCING, "r", encoding="utf-8") as f:
+            lines = [l.rstrip("\n") for l in f if l.strip() and l.strip() != keyword_line]
+        with open(PROCING, "w", encoding="utf-8") as f:
+            for l in lines:
+                f.write(l + "\n")
+    append_line(target, keyword_line)
 
 
 # ----------------- Window Fetching -----------------
 
-def fetch_window(pytrends, kw, start, end):
-    """Fetch one window."""
+def fetch_window(pytrends, kw, start, end, colname):
+    """Fetch one window and rename the returned series column to colname."""
     timeframe = f"{start.strftime('%Y-%m-%d')} {end.strftime('%Y-%m-%d')}"
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -98,7 +118,13 @@ def fetch_window(pytrends, kw, start, end):
                 return None
             if "isPartial" in df.columns:
                 df = df.drop(columns=["isPartial"])
-            df = df.rename(columns={kw: kw.replace(" ", "_")})
+            # Rename the column (whatever Google labels it) to sanitized colname
+            # In some cases the original column key equals the kw, or a readable name; rename defensively.
+            original_cols = list(df.columns)
+            if len(original_cols) >= 1:
+                # rename first data column to colname
+                first_col = original_cols[0]
+                df = df.rename(columns={first_col: colname})
             return df
         except Exception as e:
             if attempt == MAX_RETRIES:
@@ -110,6 +136,7 @@ def fetch_window(pytrends, kw, start, end):
 def compute_windows():
     windows = []
     cur = START_DATE
+    # create windows until current UTC time
     while cur + timedelta(days=WINDOW_DAYS) <= datetime.utcnow():
         start = cur
         end = cur + timedelta(days=WINDOW_DAYS)
@@ -156,19 +183,33 @@ def stitch_windows(windows_list):
 
 # ----------------- Main Weekly Fetch -----------------
 
+def sanitize_for_filename(name):
+    # keep alnum, spaces and underscores; replace others with _
+    s = "".join(c if c.isalnum() or c in (" ", "_") else "_" for c in name)
+    s = s.strip()
+    if not s:
+        s = "topic"
+    return s.replace(" ", "_")
+
+
 def main():
-    kw = pop_keyword()
-    if not kw:
+    topic_id, topic_name = pop_keyword()
+    if not topic_id:
         log("No weekly keywords left.")
         return
 
-    append_line(PROCING, kw)
+    # preserve the original line format when writing to processing/failed/processed files
+    keyword_line = f"{topic_id}\t{topic_name}"
 
-    # ----------------- NEW: use human-readable topic name for safe folder/file names -----------------
-    topic_name = topic_id_to_name.get(kw, kw)
-    safe_kw = "".join(c if c.isalnum() or c in (" ", "_") else "_" for c in topic_name).replace(" ", "_")
+    append_line(PROCING, keyword_line)
 
-    log(f"Fetching weekly: {kw}")
+    # Use human-readable name for filenames; fallback to mapping from topics_master if needed
+    if not topic_name and topic_id in topic_id_to_name:
+        topic_name = topic_id_to_name[topic_id]
+
+    safe_kw = sanitize_for_filename(topic_name)
+
+    log(f"Fetching weekly: {topic_id}\t{topic_name}")
 
     win_list = compute_windows()
     pytrends = TrendReq(hl="en-US", tz=TZ)
@@ -181,10 +222,10 @@ def main():
 
     # ---- Fetch windows ----
     for (s, e) in win_list:
-        df = fetch_window(pytrends, kw, s, e)
+        df = fetch_window(pytrends, topic_id, s, e, safe_kw)
         if df is None:
             log(f"FAILED window {s}–{e}")
-            save_status_move(kw, FAILED)
+            save_status_move(keyword_line, FAILED)
             return
 
         fname = f"{safe_kw}_{s.strftime('%Y%m%d')}_{e.strftime('%Y%m%d')}.csv"
@@ -196,15 +237,15 @@ def main():
     stitched = stitch_windows(collected)
     if stitched is None:
         log("Stitching failed.")
-        save_status_move(kw, FAILED)
+        save_status_move(keyword_line, FAILED)
         return
 
     outpath = os.path.join(RAW_WEEKLY, f"{safe_kw}_weekly.csv")
     stitched.to_csv(outpath)
     log(f"Saved stitched weekly file: {outpath}")
 
-    save_status_move(kw, PROCED)
-    log(f"SUCCESS weekly: {kw}")
+    save_status_move(keyword_line, PROCED)
+    log(f"SUCCESS weekly: {topic_id}\t{topic_name}")
 
 
 if __name__ == "__main__":
