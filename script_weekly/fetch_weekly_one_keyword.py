@@ -34,6 +34,16 @@ TODAY = datetime.utcnow().date()
 MAX_RETRIES = 5
 BACKOFF = 60
 
+# ----------------- Load topics_master.txt -----------------
+TOPICS_MASTER = os.path.join(KW_DIR, "topics_master.txt")
+topic_id_to_name = {}
+if os.path.exists(TOPICS_MASTER):
+    with open(TOPICS_MASTER, "r", encoding="utf-8") as f:
+        for line in f:
+            parts = line.strip().split("\t")
+            if len(parts) == 2:
+                topic_id, topic_name = parts
+                topic_id_to_name[topic_id] = topic_name
 
 # ----------------- Helper Functions -----------------
 
@@ -153,7 +163,10 @@ def main():
         return
 
     append_line(PROCING, kw)
-    safe_kw = kw.replace(" ", "_")
+
+    # ----------------- NEW: use human-readable topic name for safe folder/file names -----------------
+    topic_name = topic_id_to_name.get(kw, kw)
+    safe_kw = "".join(c if c.isalnum() or c in (" ", "_") else "_" for c in topic_name).replace(" ", "_")
 
     log(f"Fetching weekly: {kw}")
 
