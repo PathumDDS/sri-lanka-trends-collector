@@ -1,0 +1,92 @@
+name: Weekly Google Trends - Fetch & Merge
+
+on:
+  schedule:
+    - cron: '*/15 * * * *'   # every 15 minutes (same cadence as monthly system)
+  workflow_dispatch:
+
+jobs:
+  weekly-fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pytrends pandas
+
+      - name: Sync master (weekly)
+        run: |
+          python script_weekly/sync_master_weekly.py
+
+      - name: Fetch one weekly topic
+        id: fetch
+        run: |
+          python script_weekly/fetch_weekly_one_keyword.py
+
+      - name: Merge weekly files
+        id: merge
+        run: |
+          python script_weekly/merge_weekly.py
+
+      - name: Commit updates
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data_weekly keywords_weekly logs_weekly || true
+          # add legacy folders too if present
+          git add data keywords_weekly logs || true
+          # commit only if there are changes
+          git diff --cached --quiet || (git commit -m "[skip ci] Weekly fetch/merge: $(date -u +'%Y-%m-%d %H:%M UTC')" && git push origin HEAD:main)
+        env:
+          # avoid exposing any secrets here
+          GIT_TERMINAL_PROMPT: "0"
+
+      - name: Send email notification
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: ${{ secrets.EMAIL_SMTP_HOST }}
+          server_port: ${{ secrets.EMAIL_SMTP_PORT }}
+          username: ${{ secrets.EMAIL_SMTP_USERNAME }}
+          password: ${{ secrets.EMAIL_SMTP_PASSWORD }}
+          subject: "Weekly Google Trends run: ${{ github.repository }} (Run ${{ github.run_id }})"
+          to: ${{ secrets.EMAIL_TO }}
+          from: "${{ secrets.EMAIL_SMTP_USERNAME }}"
+          body: |
+            Weekly Google Trends Fetch Report
+            --------------------------------
+            Repository: ${{ github.repository }}
+            Run ID: ${{ github.run_id }}
+            Workflow: ${{ github.workflow }}
+            Event: ${{ github.event_name }}
+            Commit: ${{ github.sha }}
+
+            LAST 20 LOG ENTRIES:
+            -------------------------------------
+            $(tail -n 20 logs_weekly/runs.log || true)
+
+            FILE SYSTEM STATUS (data_weekly):
+            -------------------------------------
+            $(ls -R data_weekly || true)
+
+            MERGED OUTPUT:
+            -------------------------------------
+            $(ls data_weekly/merged || true)
+
+            KEYWORD STATUS:
+            processed: $(wc -l < keywords_weekly/processed.txt || true)
+            unprocessed: $(wc -l < keywords_weekly/unprocessed.txt || true)
+            failed: $(wc -l < keywords_weekly/failed.txt || true)
+
+            ACTION LOG:
+            https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
