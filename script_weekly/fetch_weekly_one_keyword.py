@@ -31,8 +31,8 @@ WINDOW_DAYS = 90
 STEP_DAYS = 30
 
 START_DATE = datetime(2015, 1, 1)
-MAX_RETRIES = 5
-BACKOFF = 60
+MAX_RETRIES = 2
+BACKOFF = 10
 
 
 # ----------------- Logging helpers -----------------
@@ -91,8 +91,11 @@ def fetch_window(pytrends, kw, start, end, safe_kw):
             df = pytrends.interest_over_time()
 
             # Treat None or empty as empty window
+            df = pytrends.interest_over_time()
             if df is None or df.empty:
-                return pd.DataFrame()
+                log(f"Window {start.date()}–{end.date()} empty")
+                return pd.DataFrame()  # fast empty return
+
 
             # Clean isPartial
             if "isPartial" in df.columns:
