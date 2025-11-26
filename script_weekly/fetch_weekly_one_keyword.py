@@ -1,27 +1,30 @@
 # script_weekly/fetch_weekly_one_keyword.py
 # OECD-CORRECT WEEKLY FETCHER
 # 90-day windows, 30-day step, 60-day overlap, median scaling
+# Adapted for master_keywords.txt only (one keyword per line)
 
 import os, time, traceback, pandas as pd
 from datetime import datetime, timedelta
 from pytrends.request import TrendReq
 
+# ----------------- Paths -----------------
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 KW_DIR = os.path.join(ROOT, "keywords_weekly")
 RAW_WINDOWS = os.path.join(ROOT, "data_weekly", "raw_windows")
 RAW_WEEKLY = os.path.join(ROOT, "data_weekly", "raw_weekly")
 LOGS = os.path.join(ROOT, "logs_weekly")
-os.makedirs(LOGS, exist_ok=True)
 
+os.makedirs(LOGS, exist_ok=True)
 os.makedirs(RAW_WINDOWS, exist_ok=True)
 os.makedirs(RAW_WEEKLY, exist_ok=True)
-os.makedirs(LOGS, exist_ok=True)
 
 UNPRO = os.path.join(KW_DIR, "unprocessed.txt")
 PROCING = os.path.join(KW_DIR, "processing.txt")
 PROCED = os.path.join(KW_DIR, "processed.txt")
 FAILED = os.path.join(KW_DIR, "failed.txt")
 RUN_LOG = os.path.join(LOGS, "runs.log")
+
+MASTER_KEYWORDS = os.path.join(KW_DIR, "master_keywords.txt")
 
 GEO = "LK"
 TZ = 330
@@ -34,81 +37,44 @@ TODAY = datetime.utcnow().date()
 MAX_RETRIES = 5
 BACKOFF = 60
 
-# ----------------- Load topics_master.txt (optional) -----------------
-TOPICS_MASTER = os.path.join(KW_DIR, "topics_master.txt")
-topic_id_to_name = {}
-if os.path.exists(TOPICS_MASTER):
-    with open(TOPICS_MASTER, "r", encoding="utf-8") as f:
-        for line in f:
-            parts = line.strip().split("\t")
-            if len(parts) == 2:
-                topic_id, topic_name = parts
-                topic_id_to_name[topic_id] = topic_name
-
 # ----------------- Helper Functions -----------------
-
 def log(msg):
     ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
     with open(RUN_LOG, "a") as f:
         f.write(f"{ts} - {msg}\n")
     print(msg)
 
-
 def append_line(path, line):
     with open(path, "a", encoding="utf-8") as f:
         f.write(line + "\n")
 
-
 def pop_keyword():
-    """
-    Pop the first non-empty line from unprocessed.txt.
-    Expect lines to be tab-separated: "<topic_id>\t<topic_name>"
-    Return (topic_id, topic_name) or (None, None) if none.
-    """
+    """Pop the first non-empty line from unprocessed.txt"""
     if not os.path.exists(UNPRO):
-        return None, None
+        return None
     with open(UNPRO, "r", encoding="utf-8") as f:
         lines = [l.rstrip("\n") for l in f if l.strip()]
     if not lines:
-        return None, None
+        return None
     first = lines[0].strip()
     rest = lines[1:]
-    # Rewrite remaining lines back
     with open(UNPRO, "w", encoding="utf-8") as f:
         for r in rest:
             f.write(r + "\n")
-    # Parse the popped line
-    if "\t" in first:
-        parts = first.split("\t", 1)
-        topic_id = parts[0].strip()
-        topic_name = parts[1].strip()
-    else:
-        # If no tab present, treat whole as id and fallback name = id
-        topic_id = first
-        topic_name = first
-    return topic_id, topic_name
+    return first  # only keyword string
 
-
-def save_status_move(keyword_line, target):
-    """
-    keyword_line: full line as stored in files (e.g. "<topic_id>\t<topic_name>")
-    target: path to append to
-    Also remove the line from processing.txt if present.
-    """
-    # remove from processing file if exists
+def save_status_move(keyword, target):
+    """Move keyword to a target file and remove from processing"""
     if os.path.exists(PROCING):
         with open(PROCING, "r", encoding="utf-8") as f:
-            lines = [l.rstrip("\n") for l in f if l.strip() and l.strip() != keyword_line]
+            lines = [l.rstrip("\n") for l in f if l.strip() and l.strip() != keyword]
         with open(PROCING, "w", encoding="utf-8") as f:
             for l in lines:
                 f.write(l + "\n")
-    append_line(target, keyword_line)
+    append_line(target, keyword)
 
-
-# ----------------- Window Fetching -----------------
-
+# ----------------- Fetching windows -----------------
 def fetch_window(pytrends, kw, start, end, colname):
-    """Fetch one window and rename the returned series column to colname."""
     timeframe = f"{start.strftime('%Y-%m-%d')} {end.strftime('%Y-%m-%d')}"
     for attempt in range(1, MAX_RETRIES + 1):
         try:
@@ -118,135 +84,97 @@ def fetch_window(pytrends, kw, start, end, colname):
                 return None
             if "isPartial" in df.columns:
                 df = df.drop(columns=["isPartial"])
-            # Rename the column (whatever Google labels it) to sanitized colname
-            # In some cases the original column key equals the kw, or a readable name; rename defensively.
-            original_cols = list(df.columns)
-            if len(original_cols) >= 1:
-                # rename first data column to colname
-                first_col = original_cols[0]
-                df = df.rename(columns={first_col: colname})
+            # rename first column to colname
+            first_col = list(df.columns)[0]
+            df = df.rename(columns={first_col: colname})
             return df
-        except Exception as e:
+        except Exception:
             if attempt == MAX_RETRIES:
                 return None
             time.sleep(BACKOFF * attempt)
     return None
 
-
 def compute_windows():
     windows = []
     cur = START_DATE
-    # create windows until current UTC time
     while cur + timedelta(days=WINDOW_DAYS) <= datetime.utcnow():
-        start = cur
-        end = cur + timedelta(days=WINDOW_DAYS)
-        windows.append((start, end))
+        windows.append((cur, cur + timedelta(days=WINDOW_DAYS)))
         cur += timedelta(days=STEP_DAYS)
     return windows
 
-
-# ----------------- Stitching (OECD Correct) -----------------
-
+# ----------------- Stitching -----------------
 def stitch_windows(windows_list):
-    """
-    windows_list: list of (df window, start, end)
-    """
     if not windows_list:
         return None
-
     stitched = windows_list[0][0].copy()
-
     for i in range(1, len(windows_list)):
         prev_df, prev_s, prev_e = windows_list[i - 1]
         df, s, e = windows_list[i]
 
-        # Overlap region
         overlap_start = max(prev_s, s)
         overlap_end = min(prev_e, e)
 
         overlap = stitched.loc[overlap_start:overlap_end]
         overlap_new = df.loc[overlap_start:overlap_end]
 
-        # Median scaling
         if len(overlap) > 0 and len(overlap_new) > 0 and overlap_new.median().iloc[0] > 0:
             scale = overlap.median().iloc[0] / overlap_new.median().iloc[0]
             df_scaled = df * scale
         else:
             df_scaled = df
 
-        # Append ONLY the non-overlapping tail of df_scaled
         tail = df_scaled.loc[prev_e + timedelta(days=1):]
         stitched = pd.concat([stitched, tail])
-
     return stitched
 
-
-# ----------------- Main Weekly Fetch -----------------
-
 def sanitize_for_filename(name):
-    # keep alnum, spaces and underscores; replace others with _
     s = "".join(c if c.isalnum() or c in (" ", "_") else "_" for c in name)
     s = s.strip()
     if not s:
-        s = "topic"
+        s = "keyword"
     return s.replace(" ", "_")
 
-
+# ----------------- Main -----------------
 def main():
-    topic_id, topic_name = pop_keyword()
-    if not topic_id:
+    keyword = pop_keyword()
+    if not keyword:
         log("No weekly keywords left.")
         return
 
-    # preserve the original line format when writing to processing/failed/processed files
-    keyword_line = f"{topic_id}\t{topic_name}"
-
-    append_line(PROCING, keyword_line)
-
-    # Use human-readable name for filenames; fallback to mapping from topics_master if needed
-    if not topic_name and topic_id in topic_id_to_name:
-        topic_name = topic_id_to_name[topic_id]
-
-    safe_kw = sanitize_for_filename(topic_name)
-
-    log(f"Fetching weekly: {topic_id}\t{topic_name}")
+    append_line(PROCING, keyword)
+    safe_kw = sanitize_for_filename(keyword)
+    log(f"Fetching weekly: {keyword}")
 
     win_list = compute_windows()
     pytrends = TrendReq(hl="en-US", tz=TZ)
-
     collected = []
 
-    # Create folder for window raw files
     win_dir = os.path.join(RAW_WINDOWS, safe_kw)
     os.makedirs(win_dir, exist_ok=True)
 
-    # ---- Fetch windows ----
     for (s, e) in win_list:
-        df = fetch_window(pytrends, topic_id, s, e, safe_kw)
+        df = fetch_window(pytrends, keyword, s, e, safe_kw)
         if df is None:
             log(f"FAILED window {s}–{e}")
-            save_status_move(keyword_line, FAILED)
+            save_status_move(keyword, FAILED)
             return
 
         fname = f"{safe_kw}_{s.strftime('%Y%m%d')}_{e.strftime('%Y%m%d')}.csv"
         df.to_csv(os.path.join(win_dir, fname))
-
         collected.append((df, s, e))
 
-    # ---- Stitch windows ----
     stitched = stitch_windows(collected)
     if stitched is None:
         log("Stitching failed.")
-        save_status_move(keyword_line, FAILED)
+        save_status_move(keyword, FAILED)
         return
 
     outpath = os.path.join(RAW_WEEKLY, f"{safe_kw}_weekly.csv")
     stitched.to_csv(outpath)
     log(f"Saved stitched weekly file: {outpath}")
 
-    save_status_move(keyword_line, PROCED)
-    log(f"SUCCESS weekly: {topic_id}\t{topic_name}")
-
+    save_status_move(keyword, PROCED)
+    log(f"SUCCESS weekly: {keyword}")
 
 if __name__ == "__main__":
     try:
