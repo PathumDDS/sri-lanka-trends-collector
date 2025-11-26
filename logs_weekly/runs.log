@@ -44,3 +44,5 @@
 2025-11-26 09:06:41 UTC - Unexpected error: unsupported operand type(s) for +=: 'datetime.datetime' and 'int'
 2025-11-26 09:15:50 UTC - Fetching weekly: Auto Financing
 2025-11-26 09:15:50 UTC - Unexpected error: unsupported operand type(s) for +=: 'datetime.datetime' and 'int'
+2025-11-26 09:20:11 UTC - Fetching weekly: Autos & Vehicles
+2025-11-26 09:30:12 UTC - Unexpected error: 'Autos___Vehicles'
