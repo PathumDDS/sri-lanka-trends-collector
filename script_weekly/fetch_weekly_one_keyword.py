@@ -110,7 +110,7 @@ def compute_windows():
     cur = START_DATE
     while cur + timedelta(days=WINDOW_DAYS) <= datetime.utcnow():
         windows.append((cur, cur + timedelta(days=WINDOW_DAYS)))
-        cur += STEP_DAYS
+        cur += timedelta(days=STEP_DAYS)   # FIXED
     return windows
 
 # ----------------- Stitching -----------------
