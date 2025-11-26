@@ -1,7 +1,8 @@
 # script_weekly/fetch_weekly_one_keyword.py
 # OECD-CORRECT WEEKLY FETCHER
+# Accepts empty windows (fills with NaN)
+# Fails only if ALL windows are empty
 # 90-day windows, 30-day step, 60-day overlap, median scaling
-# Adapted for master_keywords.txt only (one keyword per line)
 
 import os, time, traceback, pandas as pd
 from datetime import datetime, timedelta
@@ -37,7 +38,7 @@ TODAY = datetime.utcnow().date()
 MAX_RETRIES = 5
 BACKOFF = 60
 
-# ----------------- Helper Functions -----------------
+# ----------------- Logging helpers -----------------
 def log(msg):
     ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
     with open(RUN_LOG, "a") as f:
@@ -61,7 +62,7 @@ def pop_keyword():
     with open(UNPRO, "w", encoding="utf-8") as f:
         for r in rest:
             f.write(r + "\n")
-    return first  # only keyword string
+    return first
 
 def save_status_move(keyword, target):
     """Move keyword to a target file and remove from processing"""
@@ -73,40 +74,52 @@ def save_status_move(keyword, target):
                 f.write(l + "\n")
     append_line(target, keyword)
 
-# ----------------- Fetching windows -----------------
+# ----------------- Fetch window -----------------
 def fetch_window(pytrends, kw, start, end, colname):
     timeframe = f"{start.strftime('%Y-%m-%d')} {end.strftime('%Y-%m-%d')}"
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             pytrends.build_payload([kw], timeframe=timeframe, geo=GEO, tz=TZ)
             df = pytrends.interest_over_time()
+
+            # Both None and empty → treat as empty window
             if df is None or df.empty:
-                return None
+                df = pd.DataFrame()
+
+            # Remove isPartial if exists
             if "isPartial" in df.columns:
                 df = df.drop(columns=["isPartial"])
-            # rename first column to colname
-            first_col = list(df.columns)[0]
-            df = df.rename(columns={first_col: colname})
+
+            # Rename first column if exists
+            if not df.empty:
+                first_col = df.columns[0]
+                df = df.rename(columns={first_col: colname})
+
             return df
+
         except Exception:
             if attempt == MAX_RETRIES:
-                return None
+                return pd.DataFrame()  # return empty, not fail
             time.sleep(BACKOFF * attempt)
-    return None
 
+    return pd.DataFrame()
+
+# ----------------- Compute windows -----------------
 def compute_windows():
     windows = []
     cur = START_DATE
     while cur + timedelta(days=WINDOW_DAYS) <= datetime.utcnow():
         windows.append((cur, cur + timedelta(days=WINDOW_DAYS)))
-        cur += timedelta(days=STEP_DAYS)
+        cur += STEP_DAYS
     return windows
 
 # ----------------- Stitching -----------------
 def stitch_windows(windows_list):
     if not windows_list:
         return None
+
     stitched = windows_list[0][0].copy()
+
     for i in range(1, len(windows_list)):
         prev_df, prev_s, prev_e = windows_list[i - 1]
         df, s, e = windows_list[i]
@@ -117,22 +130,18 @@ def stitch_windows(windows_list):
         overlap = stitched.loc[overlap_start:overlap_end]
         overlap_new = df.loc[overlap_start:overlap_end]
 
+        # Scaling
         if len(overlap) > 0 and len(overlap_new) > 0 and overlap_new.median().iloc[0] > 0:
             scale = overlap.median().iloc[0] / overlap_new.median().iloc[0]
             df_scaled = df * scale
         else:
             df_scaled = df
 
+        # Append only new (non-overlap) part
         tail = df_scaled.loc[prev_e + timedelta(days=1):]
         stitched = pd.concat([stitched, tail])
-    return stitched
 
-def sanitize_for_filename(name):
-    s = "".join(c if c.isalnum() or c in (" ", "_") else "_" for c in name)
-    s = s.strip()
-    if not s:
-        s = "keyword"
-    return s.replace(" ", "_")
+    return stitched
 
 # ----------------- Main -----------------
 def main():
@@ -148,21 +157,35 @@ def main():
     win_list = compute_windows()
     pytrends = TrendReq(hl="en-US", tz=TZ)
     collected = []
+    non_empty_count = 0  # track windows with actual data
 
     win_dir = os.path.join(RAW_WINDOWS, safe_kw)
     os.makedirs(win_dir, exist_ok=True)
 
     for (s, e) in win_list:
-        df = fetch_window(pytrends, keyword, s, e, safe_kw)
-        if df is None:
-            log(f"FAILED window {s}–{e}")
-            save_status_move(keyword, FAILED)
-            return
 
+        df = fetch_window(pytrends, keyword, s, e, safe_kw)
+
+        # Create a full weekly index (W-SAT → same as Google Trends output)
+        full_idx = pd.date_range(s, e, freq="W-SAT")
+        df = df.reindex(full_idx)
+
+        # Count as non-empty only if at least one non-NaN exists
+        if df[safe_kw].notna().sum() > 0:
+            non_empty_count += 1
+
+        # Save individual window
         fname = f"{safe_kw}_{s.strftime('%Y%m%d')}_{e.strftime('%Y%m%d')}.csv"
         df.to_csv(os.path.join(win_dir, fname))
         collected.append((df, s, e))
 
+    # If ALL windows are empty → hard fail
+    if non_empty_count == 0:
+        log(f"Keyword has NO data in ANY window → FAIL: {keyword}")
+        save_status_move(keyword, FAILED)
+        return
+
+    # Stitch
     stitched = stitch_windows(collected)
     if stitched is None:
         log("Stitching failed.")
@@ -175,6 +198,13 @@ def main():
 
     save_status_move(keyword, PROCED)
     log(f"SUCCESS weekly: {keyword}")
+
+def sanitize_for_filename(name):
+    s = "".join(c if c.isalnum() or c in (" ", "_") else "_" for c in name)
+    s = s.strip()
+    if not s:
+        s = "keyword"
+    return s.replace(" ", "_")
 
 if __name__ == "__main__":
     try:
