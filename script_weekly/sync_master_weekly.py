@@ -12,6 +12,7 @@ KEYDIR = os.path.join(ROOT, "keywords_weekly")
 
 MASTER = os.path.join(KEYDIR, "master_keywords.txt")
 UNPRO = os.path.join(KEYDIR, "unprocessed.txt")
+print("DEBUG: unprocessed.txt path →", UNPRO)
 PROCING = os.path.join(KEYDIR, "processing.txt")
 PROCED = os.path.join(KEYDIR, "processed.txt")
 FAILED = os.path.join(KEYDIR, "failed.txt")
@@ -24,11 +25,10 @@ os.makedirs(RAW_WINDOWS, exist_ok=True)
 os.makedirs(RAW_WEEKLY, exist_ok=True)
 os.makedirs(MERGED_DIR, exist_ok=True)
 
-print("DEBUG: unprocessed.txt path →", UNPRO)
-
 # ----------------------------
 # Helper Functions
 # ----------------------------
+
 def read_set(path):
     if not os.path.exists(path):
         return set()
@@ -36,19 +36,22 @@ def read_set(path):
         return {line.strip() for line in f if line.strip()}
 
 def write_set(path, s):
+    """Write set to file and flush immediately for GitHub Actions"""
     with open(path, "w", encoding="utf-8") as f:
         for kw in sorted(s):
             f.write(kw + "\n")
+        f.flush()
+        os.fsync(f.fileno())
 
 def safe_kw(kw):
     return kw.replace(" ", "_").replace("/", "_")
 
 def delete_raw_files_for_keyword(keyword):
     sk = safe_kw(keyword)
+    deleted = []
 
     # Delete raw_windows folder
     folder = os.path.join(RAW_WINDOWS, sk)
-    deleted = []
     if os.path.exists(folder):
         for root, dirs, files in os.walk(folder, topdown=False):
             for name in files:
@@ -68,6 +71,7 @@ def delete_raw_files_for_keyword(keyword):
 # ----------------------------
 # MAIN SYNC LOGIC
 # ----------------------------
+
 def main():
     if not os.path.exists(MASTER):
         print("master_keywords.txt not found — cannot sync.")
@@ -90,11 +94,8 @@ def main():
         if kw not in unpro and kw not in processing and kw not in processed and kw not in failed:
             unpro.add(kw)
             added.append(kw)
-
     if added:
         print("Added to unprocessed:", added)
-        # <-- Immediately write to unprocessed.txt so fetch script can read it
-        write_set(UNPRO, unpro)
 
     # ----------------------------------
     # 2) Remove keywords no longer in master
@@ -118,7 +119,7 @@ def main():
             removed_processed.append((kw, deleted_files))
 
     # ----------------------------------
-    # 3) Save updated sets
+    # 3) Save all sets at the end with flush
     # ----------------------------------
     write_set(UNPRO, unpro)
     write_set(PROCING, processing)
