@@ -122,6 +122,7 @@ def main():
     # Save updated sets
     # ----------------------------------
     write_set(UNPRO, unpro)
+    write_set(PROCING, processing) 
     write_set(PROCED, processed)
     write_set(FAILED, failed)
 
