@@ -13,6 +13,7 @@ KEYDIR = os.path.join(ROOT, "keywords_weekly")
 
 MASTER = os.path.join(KEYDIR, "master_keywords.txt")
 UNPRO = os.path.join(KEYDIR, "unprocessed.txt")
+print("DEBUG: unprocessed.txt path →", UNPRO)
 PROCING = os.path.join(KEYDIR, "processing.txt")
 PROCED = os.path.join(KEYDIR, "processed.txt")
 FAILED = os.path.join(KEYDIR, "failed.txt")
