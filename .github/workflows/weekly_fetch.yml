@@ -32,6 +32,10 @@ jobs:
       - name: Sync weekly master list
         run: |
           python script_weekly/sync_master_weekly.py
+          echo "DEBUG: unprocessed.txt content:"
+          cat keywords_weekly/unprocessed.txt
+          wc -l keywords_weekly/unprocessed.txt
+
 
       # 5) Fetch one keyword
       - name: Fetch one weekly keyword
