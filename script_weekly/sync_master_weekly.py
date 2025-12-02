@@ -29,7 +29,6 @@ os.makedirs(MERGED_DIR, exist_ok=True)
 # ----------------------------
 # Helper Functions
 # ----------------------------
-
 def read_set(path):
     if not os.path.exists(path):
         return set()
@@ -46,10 +45,10 @@ def safe_kw(kw):
 
 def delete_raw_files_for_keyword(keyword):
     sk = safe_kw(keyword)
+    deleted = []
 
     # Delete raw_windows folder
     folder = os.path.join(RAW_WINDOWS, sk)
-    deleted = []
     if os.path.exists(folder):
         for root, dirs, files in os.walk(folder, topdown=False):
             for name in files:
@@ -69,7 +68,6 @@ def delete_raw_files_for_keyword(keyword):
 # ----------------------------
 # MAIN SYNC LOGIC
 # ----------------------------
-
 def main():
     if not os.path.exists(MASTER):
         print("master_keywords.txt not found — cannot sync.")
@@ -92,23 +90,22 @@ def main():
         if kw not in unpro and kw not in processing and kw not in processed and kw not in failed:
             unpro.add(kw)
             added.append(kw)
+
     if added:
         print("Added to unprocessed:", added)
+        write_set(UNPRO, unpro)  # <-- Immediately write new keywords
 
     # ----------------------------------
     # 2) Remove keywords no longer in master
     # ----------------------------------
-    # Unprocessed
     removed_unpro = [kw for kw in unpro if kw not in master]
     for kw in removed_unpro:
         unpro.remove(kw)
 
-    # Failed
     removed_failed = [kw for kw in failed if kw not in master]
     for kw in removed_failed:
         failed.remove(kw)
 
-    # Processed
     removed_processed = []
     for kw in list(processed):
         if kw not in master:
@@ -120,10 +117,10 @@ def main():
             removed_processed.append((kw, deleted_files))
 
     # ----------------------------------
-    # Save updated sets
+    # Save updated sets (after removals)
     # ----------------------------------
     write_set(UNPRO, unpro)
-    write_set(PROCING, processing) 
+    write_set(PROCING, processing)
     write_set(PROCED, processed)
     write_set(FAILED, failed)
 
@@ -142,3 +139,8 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+
+
+
