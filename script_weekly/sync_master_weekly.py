@@ -3,7 +3,6 @@
 # Prepares unprocessed/processing/processed/failed files for weekly fetching
 
 import os
-import glob
 
 # ----------------------------
 # PATH SETUP
@@ -13,7 +12,6 @@ KEYDIR = os.path.join(ROOT, "keywords_weekly")
 
 MASTER = os.path.join(KEYDIR, "master_keywords.txt")
 UNPRO = os.path.join(KEYDIR, "unprocessed.txt")
-print("DEBUG: unprocessed.txt path →", UNPRO)
 PROCING = os.path.join(KEYDIR, "processing.txt")
 PROCED = os.path.join(KEYDIR, "processed.txt")
 FAILED = os.path.join(KEYDIR, "failed.txt")
@@ -25,6 +23,8 @@ MERGED_DIR = os.path.join(ROOT, "data_weekly", "merged")
 os.makedirs(RAW_WINDOWS, exist_ok=True)
 os.makedirs(RAW_WEEKLY, exist_ok=True)
 os.makedirs(MERGED_DIR, exist_ok=True)
+
+print("DEBUG: unprocessed.txt path →", UNPRO)
 
 # ----------------------------
 # Helper Functions
@@ -45,10 +45,10 @@ def safe_kw(kw):
 
 def delete_raw_files_for_keyword(keyword):
     sk = safe_kw(keyword)
-    deleted = []
 
     # Delete raw_windows folder
     folder = os.path.join(RAW_WINDOWS, sk)
+    deleted = []
     if os.path.exists(folder):
         for root, dirs, files in os.walk(folder, topdown=False):
             for name in files:
@@ -93,7 +93,8 @@ def main():
 
     if added:
         print("Added to unprocessed:", added)
-        write_set(UNPRO, unpro)  # <-- Immediately write new keywords
+        # <-- Immediately write to unprocessed.txt so fetch script can read it
+        write_set(UNPRO, unpro)
 
     # ----------------------------------
     # 2) Remove keywords no longer in master
@@ -117,7 +118,7 @@ def main():
             removed_processed.append((kw, deleted_files))
 
     # ----------------------------------
-    # Save updated sets (after removals)
+    # 3) Save updated sets
     # ----------------------------------
     write_set(UNPRO, unpro)
     write_set(PROCING, processing)
@@ -139,8 +140,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-
-
-
