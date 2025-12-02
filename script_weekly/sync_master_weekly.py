@@ -36,12 +36,17 @@ def read_set(path):
         return {line.strip() for line in f if line.strip()}
 
 def write_set(path, s):
-    """Write set to file and flush immediately for GitHub Actions"""
+    """Write set to file, ensuring file exists and flush to disk"""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         for kw in sorted(s):
             f.write(kw + "\n")
         f.flush()
         os.fsync(f.fileno())
+    # DEBUG: confirm file contents
+    with open(path, "r", encoding="utf-8") as f:
+        lines = f.read().splitlines()
+    print(f"DEBUG: {path} written, {len(lines)} lines")
 
 def safe_kw(kw):
     return kw.replace(" ", "_").replace("/", "_")
