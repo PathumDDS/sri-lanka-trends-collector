@@ -8,13 +8,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-
       # 1) Checkout repo
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           persist-credentials: true
-          fetch-depth: 0
 
       # 2) Setup Python
       - name: Set up Python
@@ -32,22 +30,25 @@ jobs:
       - name: Sync weekly master list
         run: |
           python script_weekly/sync_master_weekly.py
-          echo "DEBUG: unprocessed.txt content:"
-          cat keywords_weekly/unprocessed.txt
+          echo "DEBUG: unprocessed.txt after sync:"
+          head -n 20 keywords_weekly/unprocessed.txt
+
+      # 5) Check unprocessed file before fetching
+      - name: Verify unprocessed.txt
+        run: |
+          echo "DEBUG: Lines in unprocessed.txt before fetch:"
           wc -l keywords_weekly/unprocessed.txt
+          head -n 10 keywords_weekly/unprocessed.txt
 
-
-      # 5) Fetch one keyword
+      # 6) Fetch one keyword
       - name: Fetch one weekly keyword
-        run: |
-          python script_weekly/fetch_weekly_one_keyword.py
+        run: python script_weekly/fetch_weekly_one_keyword.py
 
-      # 6) Merge weekly dataset
+      # 7) Merge weekly dataset
       - name: Merge weekly files
-        run: |
-          python script_weekly/merge_weekly.py
+        run: python script_weekly/merge_weekly.py
 
-      # 7) Commit changes if any
+      # 8) Commit changes if any
       - name: Commit updates
         run: |
           git config user.name "github-actions[bot]"
@@ -60,7 +61,7 @@ jobs:
         env:
           GIT_TERMINAL_PROMPT: "0"
 
-      # 8) Email notification
+      # 9) Email notification
       - name: Send email notification
         if: always()
         uses: dawidd6/action-send-mail@v3
@@ -80,23 +81,18 @@ jobs:
             Workflow: ${{ github.workflow }}
             Event: ${{ github.event_name }}
             Commit: ${{ github.sha }}
-
             LAST 20 LOG ENTRIES:
             -------------------------------------
             $(tail -n 20 logs_weekly/runs.log || true)
-
             FILE SYSTEM STATUS (data_weekly):
             -------------------------------------
             $(ls -R data_weekly || true)
-
             MERGED OUTPUT:
             -------------------------------------
             $(ls data_weekly/merged || true)
-
             KEYWORD STATUS:
             processed: $(wc -l < keywords_weekly/processed.txt || true)
             unprocessed: $(wc -l < keywords_weekly/unprocessed.txt || true)
             failed: $(wc -l < keywords_weekly/failed.txt || true)
-
             ACTION LOG:
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
