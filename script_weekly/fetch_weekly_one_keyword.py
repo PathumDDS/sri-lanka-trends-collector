@@ -1,5 +1,5 @@
 # script_weekly/fetch_weekly_one_keyword.py
-# OECD-CORRECT WEEKLY FETCHER (FINAL CLEAN VERSION)
+# OECD-CORRECT WEEKLY FETCHER (FINAL CLEAN VERSION WITH WEEK ALIGN FIX)
 # Accepts empty windows (fills with NaN)
 # Fails only if ALL windows are empty
 # Robust column detection, robust stitching, no KeyErrors
@@ -27,8 +27,11 @@ RUN_LOG = os.path.join(LOGS, "runs.log")
 
 GEO = "LK"
 TZ = 330
-WINDOW_DAYS = 90
-STEP_DAYS = 30
+# ----------------- Window size configuration -----------------
+# 5-year window with 4-year step → 1-year overlap (OECD recommended)
+WINDOW_DAYS = 365 * 5        # 5 years
+STEP_DAYS = 365 * 4          # move forward 4 years
+
 
 START_DATE = datetime(2015, 1, 1)
 MAX_RETRIES = 2
@@ -83,32 +86,31 @@ def sanitize_for_filename(name):
 
 # ----------------- Fetch window -----------------
 def fetch_window(pytrends, kw, start, end, safe_kw):
-    timeframe = f"{start.strftime('%Y-%m-%d')} {end.strftime('%Y-%m-%d')}"
+
+    # >>> FIX START — align timeframe to weekly boundaries (OECD requirement)
+    # Google weekly series runs Sunday–Saturday.
+    start_adj = start - timedelta(days=(start.weekday() + 1) % 7)
+    end_adj = end + timedelta(days=(5 - end.weekday()) % 7)
+    timeframe = f"{start_adj:%Y-%m-%d} {end_adj:%Y-%m-%d}"
+    # >>> FIX END
 
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             pytrends.build_payload([kw], timeframe=timeframe, geo=GEO, tz=TZ)
             df = pytrends.interest_over_time()
 
-            # Treat None or empty as empty window
-            df = pytrends.interest_over_time()
             if df is None or df.empty:
                 log(f"Window {start.date()}–{end.date()} empty")
-                return pd.DataFrame()  # fast empty return
+                return pd.DataFrame()
 
-
-            # Clean isPartial
             if "isPartial" in df.columns:
                 df = df.drop(columns=["isPartial"])
 
-            # Detect real column
             real_cols = [c for c in df.columns if c != "isPartial"]
             if not real_cols:
                 return pd.DataFrame()
 
             real_col = real_cols[0]
-
-            # Rename to safe kw
             df = df.rename(columns={real_col: safe_kw})
 
             return df
@@ -128,7 +130,7 @@ def compute_windows():
     now = datetime.utcnow()
     while cur + timedelta(days=WINDOW_DAYS) <= now:
         windows.append((cur, cur + timedelta(days=WINDOW_DAYS)))
-        cur += timedelta(days=STEP_DAYS)
+        cur += STEP_DAYS
     return windows
 
 
@@ -143,15 +145,12 @@ def stitch_windows(windows_list):
         prev_df, prev_s, prev_e = windows_list[i - 1]
         df, s, e = windows_list[i]
 
-        # Overlap range
         overlap_start = max(prev_s, s)
         overlap_end = min(prev_e, e)
 
-        # Extract overlap
         overlap_old = stitched.loc[overlap_start:overlap_end]
         overlap_new = df.loc[overlap_start:overlap_end]
 
-        # Scaling logic
         try:
             cond = (
                 len(overlap_old) > 0
@@ -167,7 +166,6 @@ def stitch_windows(windows_list):
         else:
             df_scaled = df
 
-        # Append tail only (non-overlap)
         tail = df_scaled.loc[prev_e + timedelta(days=1):]
         stitched = pd.concat([stitched, tail])
 
@@ -196,21 +194,17 @@ def main():
     for (s, e) in win_list:
         df = fetch_window(pytrends, keyword, s, e, safe_kw)
 
-        # Create complete weekly index
         full_idx = pd.date_range(s, e, freq="W-SAT")
         df = df.reindex(full_idx)
 
-        # Count non-empty windows
         if safe_kw in df.columns and df[safe_kw].notna().sum() > 0:
             non_empty_count += 1
 
-        # Save raw window
         fname = f"{safe_kw}_{s.strftime('%Y%m%d')}_{e.strftime('%Y%m%d')}.csv"
         df.to_csv(os.path.join(win_dir, fname))
 
         collected.append((df, s, e))
 
-    # ALL windows empty → hard fail
     if non_empty_count == 0:
         log(f"Keyword has NO data in ANY window → FAIL: {keyword}")
         save_status_move(keyword, FAILED)
