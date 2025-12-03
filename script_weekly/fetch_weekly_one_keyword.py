@@ -29,8 +29,8 @@ GEO = "LK"
 TZ = 330
 # ----------------- Window size configuration -----------------
 # 5-year window with 4-year step → 1-year overlap (OECD recommended)
-WINDOW_DAYS = 365 * 5        # 5 years
-STEP_DAYS = 365 * 4          # move forward 4 years
+WINDOW_DAYS = 365 * 3        # 3 years
+STEP_DAYS = 365 * 2          # move forward 2 years
 
 
 START_DATE = datetime(2015, 1, 1)
