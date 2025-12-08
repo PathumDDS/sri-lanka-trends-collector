@@ -1,7 +1,9 @@
 name: Weekly Google Trends - Fetch & Merge
 
 on:
-  workflow_dispatch:
+  workflow_dispatch:   # keeps manual run option
+  schedule:
+    - cron: "*/10 * * * *"   # every 10 minutes
 
 jobs:
   weekly-fetch:
