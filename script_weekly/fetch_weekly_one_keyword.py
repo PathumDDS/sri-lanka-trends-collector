@@ -6,8 +6,9 @@
 # - Avoids double-calls to pytrends.interest_over_time()
 # - Ensures processing.txt is cleaned up on final move-to-failed/processed
 # - Does median scaling & stitching unchanged
+# - Rotates TrendReq session + random User-Agent per window to avoid 429 throttling
 
-import os, time, traceback, pandas as pd
+import os, time, traceback, pandas as pd, random
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 from pytrends.request import TrendReq
@@ -39,6 +40,17 @@ STEP_YEARS = 4
 START_DATE = datetime(2015, 1, 1)
 MAX_RETRIES = 5
 BACKOFF = 20
+
+# ----------------- Small session/jitter config -----------------
+# short list of UAs — keep small and generic; you can expand if desired
+_USER_AGENTS = [
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+    "Mozilla/5.0 (Macintosh; Intel Mac OS X 13_6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.5 Safari/605.1.15",
+    "Mozilla/5.0 (iPhone; CPU iPhone OS 16_0 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/16.0 Mobile/15E148 Safari/604.1"
+]
+MIN_JITTER = 1.0   # seconds (min random sleep before each window)
+MAX_JITTER = 3.0   # seconds (max random sleep before each window)
 
 # ----------------- Logging helpers -----------------
 def log(msg):
@@ -82,6 +94,13 @@ def sanitize_for_filename(name):
     s = "".join(c if c.isalnum() or c in (" ", "_") else "_" for c in name)
     s = s.strip()
     return s.replace(" ", "_") if s else "keyword"
+
+# ----------------- small helpers for session rotation -----------------
+def _choose_user_agent():
+    return random.choice(_USER_AGENTS)
+
+def _sleep_jitter():
+    time.sleep(random.uniform(MIN_JITTER, MAX_JITTER))
 
 # ----------------- Fetch one window (fixed week-label alignment) -----------------
 def fetch_window(pytrends, kw_search, start, end, safe_kw):
@@ -160,7 +179,6 @@ def compute_windows():
 
     return windows
 
-
 # ----------------- Stitching (OECD median scaling) -----------------
 def stitch_windows(windows_list):
     if not windows_list:
@@ -225,8 +243,6 @@ def main():
     # Use exact search term
     kw_search = keyword.strip()
 
-    pytrends = TrendReq(hl="en-US", tz=TZ)
-
     win_list = compute_windows()
     if not win_list:
         log("No windows computed (START_DATE too recent?).")
@@ -238,6 +254,12 @@ def main():
 
     # Fetch windows (do NOT save to disk yet)
     for (s, e) in win_list:
+        # ---- Create a fresh pytrends session per window with randomized UA ----
+        ua = _choose_user_agent()
+        pytrends = TrendReq(hl="en-US", tz=TZ, requests_args={"headers": {"User-Agent": ua}})
+        # small jitter to avoid bursts
+        _sleep_jitter()
+        # ---------------------------------------------------------------------
         df = fetch_window(pytrends, kw_search, s, e, safe_kw)
         if safe_kw in df.columns and int(df[safe_kw].notna().sum()) > 0:
             non_empty_count += 1
