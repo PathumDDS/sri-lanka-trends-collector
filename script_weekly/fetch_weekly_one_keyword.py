@@ -166,12 +166,15 @@ def stitch_windows(windows_list):
     if not windows_list:
         return None
 
+    # Initial df
     stitched = windows_list[0][0].copy()
+    stitched = stitched.sort_index()
 
     for i in range(1, len(windows_list)):
         prev_df, prev_s, prev_e = windows_list[i - 1]
         df, s, e = windows_list[i]
 
+        # Calculate overlap
         overlap_start = max(prev_s, s)
         overlap_end = min(prev_e, e)
 
@@ -180,23 +183,33 @@ def stitch_windows(windows_list):
 
         try:
             cond = (
-                len(overlap_old.dropna()) > 0 and
-                len(overlap_new.dropna()) > 0 and
-                overlap_new.median().iloc[0] > 0
+                len(overlap_old.dropna()) > 0
+                and len(overlap_new.dropna()) > 0
+                and overlap_new.median().iloc[0] > 0
             )
         except Exception:
             cond = False
 
+        # Apply scaling if possible
         if cond:
             scale = overlap_old.median().iloc[0] / overlap_new.median().iloc[0]
             df_scaled = df * scale
         else:
             df_scaled = df
 
+        # Take only the NEW part AFTER last previous window date
         tail = df_scaled.loc[prev_e + timedelta(days=1):]
+
+        # Append to stitched
         stitched = pd.concat([stitched, tail])
 
-    return stitched.sort_index()
+        # 🔥 Ensure NO duplicate weekly rows (critical fix)
+        stitched = stitched[~stitched.index.duplicated(keep="last")]
+
+    # Final sort
+    stitched = stitched.sort_index()
+
+    return stitched
 
 # ----------------- Main -----------------
 def main():
