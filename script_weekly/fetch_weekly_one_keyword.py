@@ -145,18 +145,21 @@ def fetch_window(pytrends, kw_search, start, end, safe_kw):
 def compute_windows():
     windows = []
     cur = START_DATE
-    now = datetime.utcnow()
+
+    # use yesterday to avoid incomplete week
+    now = datetime.utcnow() - timedelta(days=1)
 
     # Standard full windows
     while cur + relativedelta(years=WINDOW_YEARS) <= now:
         windows.append((cur, cur + relativedelta(years=WINDOW_YEARS)))
         cur = cur + relativedelta(years=STEP_YEARS)
 
-    # Add final partial window (to cover recent period)
-    if (now - cur).days >= 7:   # at least 1 week
+    # Add final partial window (≥1 week)
+    if (now - cur).days >= 7:
         windows.append((cur, now))
 
     return windows
+
 
 # ----------------- Stitching (OECD median scaling) -----------------
 def stitch_windows(windows_list):
