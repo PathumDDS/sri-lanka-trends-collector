@@ -208,3 +208,16 @@
 2025-12-08 10:06:31 UTC - Exception fetching window 2023-01-01–2025-12-07 (attempt 4): The request failed: Google returned a response with code 429
 2025-12-08 10:07:51 UTC - Exception fetching window 2023-01-01–2025-12-07 (attempt 5): The request failed: Google returned a response with code 429
 2025-12-08 10:07:51 UTC - Keyword has NO data in ANY window → FAIL: Colombo hotel
+2025-12-08 10:32:51 UTC - Fetching weekly: Daraz Sri Lanka
+2025-12-08 10:32:52 UTC - Exception fetching window 2015-01-01–2020-01-01 (attempt 1): The request failed: Google returned a response with code 429
+2025-12-08 10:33:13 UTC - Exception fetching window 2015-01-01–2020-01-01 (attempt 2): The request failed: Google returned a response with code 429
+2025-12-08 10:33:53 UTC - Exception fetching window 2015-01-01–2020-01-01 (attempt 3): The request failed: Google returned a response with code 429
+2025-12-08 10:34:53 UTC - Exception fetching window 2015-01-01–2020-01-01 (attempt 4): The request failed: Google returned a response with code 429
+2025-12-08 10:36:14 UTC - Exception fetching window 2015-01-01–2020-01-01 (attempt 5): The request failed: Google returned a response with code 429
+2025-12-08 10:36:15 UTC - Exception fetching window 2019-01-01–2024-01-01 (attempt 1): The request failed: Google returned a response with code 429
+2025-12-08 10:36:35 UTC - Exception fetching window 2019-01-01–2024-01-01 (attempt 2): The request failed: Google returned a response with code 429
+2025-12-08 10:37:15 UTC - Exception fetching window 2019-01-01–2024-01-01 (attempt 3): The request failed: Google returned a response with code 429
+2025-12-08 10:38:16 UTC - Window 2019-01-01–2024-01-01 -> fetched shape (263, 1), non-null 263
+2025-12-08 10:38:17 UTC - Window 2023-01-01–2025-12-07 -> fetched shape (154, 1), non-null 154
+2025-12-08 10:38:17 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/Daraz_Sri_Lanka_weekly.csv
+2025-12-08 10:38:17 UTC - SUCCESS weekly: Daraz Sri Lanka
