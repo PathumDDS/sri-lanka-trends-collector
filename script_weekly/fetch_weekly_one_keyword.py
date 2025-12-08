@@ -146,9 +146,16 @@ def compute_windows():
     windows = []
     cur = START_DATE
     now = datetime.utcnow()
+
+    # Standard full windows
     while cur + relativedelta(years=WINDOW_YEARS) <= now:
         windows.append((cur, cur + relativedelta(years=WINDOW_YEARS)))
         cur = cur + relativedelta(years=STEP_YEARS)
+
+    # Add final partial window (to cover recent period)
+    if (now - cur).days >= 7:   # at least 1 week
+        windows.append((cur, now))
+
     return windows
 
 # ----------------- Stitching (OECD median scaling) -----------------
