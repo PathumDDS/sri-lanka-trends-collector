@@ -221,3 +221,10 @@
 2025-12-08 10:38:17 UTC - Window 2023-01-01–2025-12-07 -> fetched shape (154, 1), non-null 154
 2025-12-08 10:38:17 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/Daraz_Sri_Lanka_weekly.csv
 2025-12-08 10:38:17 UTC - SUCCESS weekly: Daraz Sri Lanka
+2025-12-08 10:41:54 UTC - Fetching weekly: Ella Sri Lanka
+2025-12-08 10:41:57 UTC - Exception fetching window 2015-01-01–2020-01-01 (attempt 1): The request failed: Google returned a response with code 429
+2025-12-08 10:42:18 UTC - Window 2015-01-01–2020-01-01 -> fetched shape (263, 1), non-null 10
+2025-12-08 10:42:22 UTC - Window 2019-01-01–2024-01-01 -> fetched shape (263, 1), non-null 8
+2025-12-08 10:42:25 UTC - Window 2023-01-01–2025-12-07 -> fetched shape (154, 1), non-null 154
+2025-12-08 10:42:25 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/Ella_Sri_Lanka_weekly.csv
+2025-12-08 10:42:25 UTC - SUCCESS weekly: Ella Sri Lanka
