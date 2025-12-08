@@ -1,11 +1,11 @@
 # script_weekly/fetch_weekly_one_keyword.py
-# WEEKLY FETCHER FOR NORMAL GOOGLE SEARCH TERMS (NOT TOPICS)
+# WEEKLY FETCHER FOR NORMAL GOOGLE SEARCH TERMS (CORRECT WEEK ALIGNMENT)
 # - Uses relativedelta for multi-year windows
-# - Does NOT save window files when the keyword FAILs
+# - Does NOT save window files when keyword FAILs
 # - Adds verbose per-window logs
-# - Avoids double IO calls
-# - Filename-sanitization never affects search keyword
-# - Uses exact keyword for search (kw_search)
+# - Avoids double-calls to pytrends.interest_over_time()
+# - Ensures processing.txt is cleaned up on final move-to-failed/processed
+# - Does median scaling & stitching unchanged
 
 import os, time, traceback, pandas as pd
 from datetime import datetime, timedelta
@@ -83,38 +83,43 @@ def sanitize_for_filename(name):
     s = s.strip()
     return s.replace(" ", "_") if s else "keyword"
 
-# ----------------- Fetch one window (fixed kw_search) -----------------
+# ----------------- Fetch one window (fixed week-label alignment) -----------------
 def fetch_window(pytrends, kw_search, start, end, safe_kw):
-
-    # Weekly alignment (Sun–Sat)
-    start_adj = start - timedelta(days=(start.weekday() + 1) % 7)
-    end_adj = end + timedelta(days=(5 - end.weekday()) % 7)
+    # ---- ALIGNMENT FIX (Google weekly labels are Sundays) ----
+    # Make start_adj the nearest previous Sunday (so labels match Google's).
+    start_adj = start - timedelta(days=(start.weekday() + 1) % 7)   # gives Sunday
+    # Make end_adj the next Sunday (inclusive); this ensures date_range with W-SUN covers the whole range.
+    end_adj = end + timedelta(days=(6 - end.weekday()) % 7)         # next Sunday (or same if Sunday)
     timeframe = f"{start_adj:%Y-%m-%d} {end_adj:%Y-%m-%d}"
+    # -----------------------------------------------------------
 
     for attempt in range(1, MAX_RETRIES + 1):
         try:
-            # -------- FIXED: NO tz in build_payload & use kw_search -------
+            # DO NOT pass tz into build_payload (TrendReq already created with tz)
             pytrends.build_payload([kw_search], timeframe=timeframe, geo=GEO)
-            # --------------------------------------------------------------
+            df = pytrends.interest_over_time()   # single call only
 
-            df = pytrends.interest_over_time()
+            # Build full weekly index using Sundays as labels (W-SUN)
+            full_idx = pd.date_range(start_adj, end_adj, freq="W-SUN")
 
-            # Full weekly index
-            full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
-
-            # No data → return empty with full weekly index
+            # If Google returned nothing → return NaN-filled weekly indexed DF
             if df is None or df.empty:
+                log(f"Window {start.date()}–{end.date()} empty (returned None/empty)")
                 return pd.DataFrame(index=full_idx, columns=[safe_kw])
 
+            # Drop isPartial if present
             if "isPartial" in df.columns:
                 df = df.drop(columns=["isPartial"])
 
+            # Detect actual column (first non-isPartial)
             real_cols = [c for c in df.columns if c != "isPartial"]
             if not real_cols:
                 return pd.DataFrame(index=full_idx, columns=[safe_kw])
 
             real_col = real_cols[0]
             df = df.rename(columns={real_col: safe_kw})
+
+            # Reindex to the weekly Sunday index (this avoids misalignment NaNs)
             df = df.reindex(full_idx)
 
             log(f"Window {start.date()}–{end.date()} -> fetched shape {df.shape}, non-null {int(df[safe_kw].notna().sum())}")
@@ -123,12 +128,17 @@ def fetch_window(pytrends, kw_search, start, end, safe_kw):
         except Exception as ex:
             log(f"Exception fetching window {start.date()}–{end.date()} (attempt {attempt}): {ex}")
             if attempt == MAX_RETRIES:
-                full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
+                # return NaN-filled weekly index on final failure
+                full_idx = pd.date_range(start - timedelta(days=(start.weekday() + 1) % 7),
+                                         end + timedelta(days=(6 - end.weekday()) % 7),
+                                         freq="W-SUN")
                 return pd.DataFrame(index=full_idx, columns=[safe_kw])
             time.sleep(BACKOFF * attempt)
 
-    # Should not reach here
-    full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
+    # fallback
+    full_idx = pd.date_range(start - timedelta(days=(start.weekday() + 1) % 7),
+                             end + timedelta(days=(6 - end.weekday()) % 7),
+                             freq="W-SUN")
     return pd.DataFrame(index=full_idx, columns=[safe_kw])
 
 # ----------------- Compute windows -----------------
@@ -141,7 +151,7 @@ def compute_windows():
         cur = cur + relativedelta(years=STEP_YEARS)
     return windows
 
-# ----------------- Stitching -----------------
+# ----------------- Stitching (OECD median scaling) -----------------
 def stitch_windows(windows_list):
     if not windows_list:
         return None
@@ -189,9 +199,8 @@ def main():
     safe_kw = sanitize_for_filename(keyword)
     log(f"Fetching weekly: {keyword}")
 
-    # -------- FIXED: this is the real search term --------
+    # Use exact search term
     kw_search = keyword.strip()
-    # ------------------------------------------------------
 
     pytrends = TrendReq(hl="en-US", tz=TZ)
 
@@ -204,24 +213,27 @@ def main():
     collected = []
     non_empty_count = 0
 
+    # Fetch windows (do NOT save to disk yet)
     for (s, e) in win_list:
         df = fetch_window(pytrends, kw_search, s, e, safe_kw)
         if safe_kw in df.columns and int(df[safe_kw].notna().sum()) > 0:
             non_empty_count += 1
         collected.append((df, s, e))
 
+    # If ALL windows empty -> FAIL and do not save raw window files
     if non_empty_count == 0:
         log(f"Keyword has NO data in ANY window → FAIL: {keyword}")
         save_status_move(keyword, FAILED)
         return
 
-    # Save raw window files
+    # Save raw windows
     win_dir = os.path.join(RAW_WINDOWS, safe_kw)
     os.makedirs(win_dir, exist_ok=True)
     for (df, s, e) in collected:
         fname = f"{safe_kw}_{s.strftime('%Y%m%d')}_{e.strftime('%Y%m%d')}.csv"
         df.to_csv(os.path.join(win_dir, fname))
 
+    # Stitch and save
     stitched = stitch_windows(collected)
     if stitched is None:
         log("Stitching failed.")
