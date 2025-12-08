@@ -1,11 +1,11 @@
 # script_weekly/fetch_weekly_one_keyword.py
-# OECD-CORRECT WEEKLY FETCHER (DEBUG-FRIENDLY, RELATIVEDELTA WINDOWS)
+# WEEKLY FETCHER FOR NORMAL GOOGLE SEARCH TERMS (NOT TOPICS)
 # - Uses relativedelta for multi-year windows
-# - Does NOT save window files when the keyword ultimately FAILs
-# - Adds verbose per-window logs (shape / non-null count)
-# - Avoids double-calls to pytrends.interest_over_time()
-# - Ensures processing.txt is cleaned up on final move-to-failed/processed
-# - Does median scaling & stitching unchanged
+# - Does NOT save window files when the keyword FAILs
+# - Adds verbose per-window logs
+# - Avoids double IO calls
+# - Filename-sanitization never affects search keyword
+# - Uses exact keyword for search (kw_search)
 
 import os, time, traceback, pandas as pd
 from datetime import datetime, timedelta
@@ -83,22 +83,26 @@ def sanitize_for_filename(name):
     s = s.strip()
     return s.replace(" ", "_") if s else "keyword"
 
-# ----------------- Fetch one window -----------------
-def fetch_window(pytrends, kw, start, end, safe_kw):
-    # Align to weekly boundaries (Google weekly is Sun–Sat)
+# ----------------- Fetch one window (fixed kw_search) -----------------
+def fetch_window(pytrends, kw_search, start, end, safe_kw):
+
+    # Weekly alignment (Sun–Sat)
     start_adj = start - timedelta(days=(start.weekday() + 1) % 7)
     end_adj = end + timedelta(days=(5 - end.weekday()) % 7)
     timeframe = f"{start_adj:%Y-%m-%d} {end_adj:%Y-%m-%d}"
 
     for attempt in range(1, MAX_RETRIES + 1):
         try:
-            # ------------- FIXED: removed tz=TZ from build_payload ----------------
-            pytrends.build_payload([kw], timeframe=timeframe, geo=GEO)
-            # --------------------------------------------------------------------
+            # -------- FIXED: NO tz in build_payload & use kw_search -------
+            pytrends.build_payload([kw_search], timeframe=timeframe, geo=GEO)
+            # --------------------------------------------------------------
 
             df = pytrends.interest_over_time()
 
+            # Full weekly index
             full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
+
+            # No data → return empty with full weekly index
             if df is None or df.empty:
                 return pd.DataFrame(index=full_idx, columns=[safe_kw])
 
@@ -123,6 +127,7 @@ def fetch_window(pytrends, kw, start, end, safe_kw):
                 return pd.DataFrame(index=full_idx, columns=[safe_kw])
             time.sleep(BACKOFF * attempt)
 
+    # Should not reach here
     full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
     return pd.DataFrame(index=full_idx, columns=[safe_kw])
 
@@ -184,6 +189,10 @@ def main():
     safe_kw = sanitize_for_filename(keyword)
     log(f"Fetching weekly: {keyword}")
 
+    # -------- FIXED: this is the real search term --------
+    kw_search = keyword.strip()
+    # ------------------------------------------------------
+
     pytrends = TrendReq(hl="en-US", tz=TZ)
 
     win_list = compute_windows()
@@ -196,7 +205,7 @@ def main():
     non_empty_count = 0
 
     for (s, e) in win_list:
-        df = fetch_window(pytrends, keyword, s, e, safe_kw)
+        df = fetch_window(pytrends, kw_search, s, e, safe_kw)
         if safe_kw in df.columns and int(df[safe_kw].notna().sum()) > 0:
             non_empty_count += 1
         collected.append((df, s, e))
@@ -206,6 +215,7 @@ def main():
         save_status_move(keyword, FAILED)
         return
 
+    # Save raw window files
     win_dir = os.path.join(RAW_WINDOWS, safe_kw)
     os.makedirs(win_dir, exist_ok=True)
     for (df, s, e) in collected:
