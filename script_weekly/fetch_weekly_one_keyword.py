@@ -1,8 +1,11 @@
 # script_weekly/fetch_weekly_one_keyword.py
-# OECD-CORRECT WEEKLY FETCHER (FINAL CLEAN + RELATIVEDELTA WINDOWS)
-# Accepts empty windows (fills with NaN)
-# Fails only if ALL windows are empty (entirely)
-# Robust column detection, robust stitching, no KeyErrors
+# OECD-CORRECT WEEKLY FETCHER (DEBUG-FRIENDLY, RELATIVEDELTA WINDOWS)
+# - Uses relativedelta for multi-year windows
+# - Does NOT save window files when the keyword ultimately FAILs
+# - Adds verbose per-window logs (shape / non-null count)
+# - Avoids double-calls to pytrends.interest_over_time()
+# - Ensures processing.txt is cleaned up on final move-to-failed/processed
+# - Does median scaling & stitching unchanged
 
 import os, time, traceback, pandas as pd
 from datetime import datetime, timedelta
@@ -29,7 +32,8 @@ RUN_LOG = os.path.join(LOGS, "runs.log")
 GEO = "LK"
 TZ = 330
 
-# ----------------- Window size configuration -----------------
+# ----------------- Window size configuration (change here) -----------------
+# Example: 5-year window, 4-year step -> 1-year overlap
 WINDOW_YEARS = 5
 STEP_YEARS = 4
 
@@ -40,7 +44,7 @@ BACKOFF = 10
 # ----------------- Logging helpers -----------------
 def log(msg):
     ts = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC")
-    with open(RUN_LOG, "a") as f:
+    with open(RUN_LOG, "a", encoding="utf-8") as f:
         f.write(f"{ts} - {msg}\n")
     print(msg)
 
@@ -48,23 +52,29 @@ def append_line(path, line):
     with open(path, "a", encoding="utf-8") as f:
         f.write(line + "\n")
 
+def read_lines(path):
+    if not os.path.exists(path):
+        return []
+    with open(path, "r", encoding="utf-8") as f:
+        return [l.rstrip("\n") for l in f if l.strip()]
+
 def pop_keyword():
-    if not os.path.exists(UNPRO):
-        return None
-    with open(UNPRO, "r", encoding="utf-8") as f:
-        lines = [l.strip() for l in f if l.strip()]
+    # pop first non-empty line
+    lines = read_lines(UNPRO)
     if not lines:
         return None
-    first, rest = lines[0], lines[1:]
+    first = lines[0]
+    rest = lines[1:]
     with open(UNPRO, "w", encoding="utf-8") as f:
         for r in rest:
             f.write(r + "\n")
     return first
 
 def save_status_move(keyword, target):
+    # remove from processing if present, then append to target
     if os.path.exists(PROCING):
-        with open(PROCING, "r", encoding="utf-8") as f:
-            lines = [l.strip() for l in f if l.strip() and l.strip() != keyword]
+        lines = read_lines(PROCING)
+        lines = [l for l in lines if l != keyword]
         with open(PROCING, "w", encoding="utf-8") as f:
             for l in lines:
                 f.write(l + "\n")
@@ -76,8 +86,9 @@ def sanitize_for_filename(name):
     s = s.strip()
     return s.replace(" ", "_") if s else "keyword"
 
-# ----------------- Fetch window -----------------
+# ----------------- Fetch one window -----------------
 def fetch_window(pytrends, kw, start, end, safe_kw):
+    # Align to weekly boundaries (Google weekly is Sun–Sat)
     start_adj = start - timedelta(days=(start.weekday() + 1) % 7)
     end_adj = end + timedelta(days=(5 - end.weekday()) % 7)
     timeframe = f"{start_adj:%Y-%m-%d} {end_adj:%Y-%m-%d}"
@@ -85,61 +96,89 @@ def fetch_window(pytrends, kw, start, end, safe_kw):
     for attempt in range(1, MAX_RETRIES + 1):
         try:
             pytrends.build_payload([kw], timeframe=timeframe, geo=GEO, tz=TZ)
-            df = pytrends.interest_over_time()
+            df = pytrends.interest_over_time()   # single call only
+
+            # If Google returned nothing, create an empty weekly-indexed DF (NaNs)
+            full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
             if df is None or df.empty:
-                df = pd.DataFrame(index=pd.date_range(start_adj, end_adj, freq="W-SAT"), columns=[safe_kw])
-                return df
+                # return empty-shaped df (so downstream code sees NaNs)
+                return pd.DataFrame(index=full_idx, columns=[safe_kw])
+
+            # remove isPartial column if present
             if "isPartial" in df.columns:
                 df = df.drop(columns=["isPartial"])
+
+            # detect the actual data column (first non-isPartial column)
             real_cols = [c for c in df.columns if c != "isPartial"]
             if not real_cols:
-                df = pd.DataFrame(index=pd.date_range(start_adj, end_adj, freq="W-SAT"), columns=[safe_kw])
-                return df
+                return pd.DataFrame(index=full_idx, columns=[safe_kw])
+
             real_col = real_cols[0]
             df = df.rename(columns={real_col: safe_kw})
-            full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
+
+            # reindex to full weekly index (guarantees same index for all windows)
             df = df.reindex(full_idx)
+
+            # Logging summary for debugging
+            log(f"Window {start.date()}–{end.date()} -> fetched shape {df.shape}, non-null {int(df[safe_kw].notna().sum())}")
+
             return df
-        except Exception:
+
+        except Exception as ex:
+            log(f"Exception fetching window {start.date()}–{end.date()} (attempt {attempt}): {ex}")
             if attempt == MAX_RETRIES:
-                df = pd.DataFrame(index=pd.date_range(start_adj, end_adj, freq="W-SAT"), columns=[safe_kw])
-                return df
+                # return NaN-filled weekly index (so it counts as empty)
+                full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
+                return pd.DataFrame(index=full_idx, columns=[safe_kw])
             time.sleep(BACKOFF * attempt)
-    return pd.DataFrame(index=pd.date_range(start_adj, end_adj, freq="W-SAT"), columns=[safe_kw])
+
+    full_idx = pd.date_range(start_adj, end_adj, freq="W-SAT")
+    return pd.DataFrame(index=full_idx, columns=[safe_kw])
 
 # ----------------- Compute windows -----------------
 def compute_windows():
     windows = []
     cur = START_DATE
     now = datetime.utcnow()
+    # use relativedelta to handle leap years / proper year arithmetic
     while cur + relativedelta(years=WINDOW_YEARS) <= now:
         windows.append((cur, cur + relativedelta(years=WINDOW_YEARS)))
-        cur += relativedelta(years=STEP_YEARS)
+        cur = cur + relativedelta(years=STEP_YEARS)
     return windows
 
-# ----------------- Stitch windows -----------------
+# ----------------- Stitching (OECD median scaling) -----------------
 def stitch_windows(windows_list):
     if not windows_list:
         return None
+
     stitched = windows_list[0][0].copy()
+
     for i in range(1, len(windows_list)):
         prev_df, prev_s, prev_e = windows_list[i - 1]
         df, s, e = windows_list[i]
+
         overlap_start = max(prev_s, s)
         overlap_end = min(prev_e, e)
+
         overlap_old = stitched.loc[overlap_start:overlap_end]
         overlap_new = df.loc[overlap_start:overlap_end]
+
         try:
-            cond = len(overlap_old.dropna()) > 0 and len(overlap_new.dropna()) > 0 and overlap_new.median().iloc[0] > 0
-        except:
+            cond = (len(overlap_old.dropna()) > 0 and len(overlap_new.dropna()) > 0 and overlap_new.median().iloc[0] > 0)
+        except Exception:
             cond = False
+
         if cond:
             scale = overlap_old.median().iloc[0] / overlap_new.median().iloc[0]
             df_scaled = df * scale
         else:
             df_scaled = df
+
         tail = df_scaled.loc[prev_e + timedelta(days=1):]
         stitched = pd.concat([stitched, tail])
+
+    # After stitching, ensure index is weekly and sorted
+    stitched = stitched.sort_index()
     return stitched
 
 # ----------------- Main -----------------
@@ -148,33 +187,48 @@ def main():
     if not keyword:
         log("No weekly keywords left.")
         return
+
+    # add to processing file (we will remove it when moving to processed/failed)
     append_line(PROCING, keyword)
     safe_kw = sanitize_for_filename(keyword)
     log(f"Fetching weekly: {keyword}")
 
+    # prepare pytrends
     pytrends = TrendReq(hl="en-US", tz=TZ)
+
     win_list = compute_windows()
+    if not win_list:
+        log("No windows computed (START_DATE too recent?).")
+        save_status_move(keyword, FAILED)
+        return
+
     collected = []
     non_empty_count = 0
 
+    # Fetch windows but DO NOT save files yet. We'll only save windows if at least one window has data.
     for (s, e) in win_list:
         df = fetch_window(pytrends, keyword, s, e, safe_kw)
-        if df[safe_kw].notna().sum() > 0:
+
+        # Count non-empty windows: non-empty if any non-NaN value exists
+        if safe_kw in df.columns and int(df[safe_kw].notna().sum()) > 0:
             non_empty_count += 1
+
         collected.append((df, s, e))
 
+    # If ALL windows empty -> FAIL, do not save any raw windows
     if non_empty_count == 0:
         log(f"Keyword has NO data in ANY window → FAIL: {keyword}")
         save_status_move(keyword, FAILED)
-        return  # do NOT save any raw windows
+        return
 
-    # Only save raw windows if at least one window has data
+    # Save raw windows now (only for keywords that will be processed)
     win_dir = os.path.join(RAW_WINDOWS, safe_kw)
     os.makedirs(win_dir, exist_ok=True)
     for (df, s, e) in collected:
         fname = f"{safe_kw}_{s.strftime('%Y%m%d')}_{e.strftime('%Y%m%d')}.csv"
         df.to_csv(os.path.join(win_dir, fname))
 
+    # Stitch & save stitched weekly csv
     stitched = stitch_windows(collected)
     if stitched is None:
         log("Stitching failed.")
@@ -184,6 +238,7 @@ def main():
     outpath = os.path.join(RAW_WEEKLY, f"{safe_kw}_weekly.csv")
     stitched.to_csv(outpath)
     log(f"Saved stitched weekly file: {outpath}")
+
     save_status_move(keyword, PROCED)
     log(f"SUCCESS weekly: {keyword}")
 
