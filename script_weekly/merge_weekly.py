@@ -54,12 +54,20 @@ def main():
             print("No stitched weekly file found for keyword:", kw)
             continue
 
-        # Use the most recent file (by modification time)
+        # Use latest stitched file
         latest_file = max(files, key=lambda p: os.path.getmtime(p))
+
         try:
             df = pd.read_csv(latest_file, index_col=0, parse_dates=True)
+
+            # ----------------------------
+            # 🔥 Critical Fix: Drop duplicates
+            # ----------------------------
+            df = df[~df.index.duplicated(keep="last")]
+
             df.columns = [sk]
             dfs.append(df)
+
         except Exception as e:
             print("Skipping", latest_file, "due to error:", e)
 
@@ -67,12 +75,28 @@ def main():
         print("No dataframes to merge. All missing or unreadable.")
         return
 
+    # ----------------------------
+    # Merge all keywords into one wide dataset
+    # ----------------------------
     merged = pd.concat(dfs, axis=1)
+
+    # ----------------------------
+    # 🔥 Global deduplication (safety net)
+    # ----------------------------
+    merged = merged[~merged.index.duplicated(keep="last")]
+
+    # Sort index (should already be weekly Sundays)
     merged.sort_index(inplace=True)
 
+    # ----------------------------
+    # Save result
+    # ----------------------------
     out_path = os.path.join(MERGED_DIR, "weekly_dataset.csv")
     merged.to_csv(out_path)
     print("Weekly merged dataset saved to:", out_path)
+
+    if missing:
+        print("\nMissing stitched files for:", missing)
 
 if __name__ == "__main__":
     main()
