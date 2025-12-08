@@ -152,3 +152,13 @@
 2025-12-08 08:06:59 UTC - Exception fetching window 2023-01-01–2025-12-07 (attempt 5): The request failed: Google returned a response with code 429
 2025-12-08 08:06:59 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/Daraz_Sri_Lanka_weekly.csv
 2025-12-08 08:06:59 UTC - SUCCESS weekly: Daraz Sri Lanka
+2025-12-08 08:50:29 UTC - Fetching weekly: Daraz Sri Lanka
+2025-12-08 08:50:30 UTC - Window 2015-01-01–2020-01-01 -> fetched shape (263, 1), non-null 263
+2025-12-08 08:50:30 UTC - Exception fetching window 2019-01-01–2024-01-01 (attempt 1): The request failed: Google returned a response with code 429
+2025-12-08 08:50:51 UTC - Window 2019-01-01–2024-01-01 -> fetched shape (263, 1), non-null 263
+2025-12-08 08:50:51 UTC - Exception fetching window 2023-01-01–2025-12-07 (attempt 1): The request failed: Google returned a response with code 429
+2025-12-08 08:51:11 UTC - Exception fetching window 2023-01-01–2025-12-07 (attempt 2): The request failed: Google returned a response with code 429
+2025-12-08 08:51:51 UTC - Exception fetching window 2023-01-01–2025-12-07 (attempt 3): The request failed: Google returned a response with code 429
+2025-12-08 08:52:52 UTC - Window 2023-01-01–2025-12-07 -> fetched shape (154, 1), non-null 154
+2025-12-08 08:52:52 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/Daraz_Sri_Lanka_weekly.csv
+2025-12-08 08:52:52 UTC - SUCCESS weekly: Daraz Sri Lanka
