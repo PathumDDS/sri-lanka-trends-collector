@@ -83,3 +83,10 @@
 2025-12-08 05:59:13 UTC - Window 2019-01-01–2024-01-01 -> fetched shape (263, 1), non-null 263
 2025-12-08 05:59:13 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/job_vacancies_weekly.csv
 2025-12-08 05:59:13 UTC - SUCCESS weekly: job vacancies
+2025-12-08 06:22:11 UTC - Fetching weekly: job vacancies
+2025-12-08 06:22:12 UTC - Window 2015-01-01–2020-01-01 -> fetched shape (263, 1), non-null 263
+2025-12-08 06:22:12 UTC - Window 2019-01-01–2024-01-01 -> fetched shape (263, 1), non-null 263
+2025-12-08 06:22:13 UTC - Exception fetching window 2023-01-01–2025-12-08 (attempt 1): The request failed: Google returned a response with code 429
+2025-12-08 06:22:23 UTC - Exception fetching window 2023-01-01–2025-12-08 (attempt 2): The request failed: Google returned a response with code 429
+2025-12-08 06:22:23 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/job_vacancies_weekly.csv
+2025-12-08 06:22:23 UTC - SUCCESS weekly: job vacancies
