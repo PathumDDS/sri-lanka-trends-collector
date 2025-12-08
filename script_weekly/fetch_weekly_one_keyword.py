@@ -37,8 +37,8 @@ WINDOW_YEARS = 5
 STEP_YEARS = 4
 
 START_DATE = datetime(2015, 1, 1)
-MAX_RETRIES = 2
-BACKOFF = 10
+MAX_RETRIES = 5
+BACKOFF = 20
 
 # ----------------- Logging helpers -----------------
 def log(msg):
