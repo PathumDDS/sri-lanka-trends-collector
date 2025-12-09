@@ -237,3 +237,13 @@
 2025-12-08 10:48:23 UTC - Window 2023-01-01–2025-12-07 -> fetched shape (154, 1), non-null 154
 2025-12-08 10:48:23 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/Bentota_hotel_weekly.csv
 2025-12-08 10:48:23 UTC - SUCCESS weekly: Bentota hotel
+2025-12-09 02:45:56 UTC - Fetching weekly: CV format
+2025-12-09 02:45:58 UTC - Window 2015-01-01–2020-01-01 -> fetched shape (263, 1), non-null 263
+2025-12-09 02:46:00 UTC - Window 2019-01-01–2024-01-01 -> fetched shape (263, 1), non-null 8
+2025-12-09 02:46:03 UTC - Exception fetching window 2023-01-01–2025-12-08 (attempt 1): The request failed: Google returned a response with code 429
+2025-12-09 02:46:23 UTC - Exception fetching window 2023-01-01–2025-12-08 (attempt 2): The request failed: Google returned a response with code 429
+2025-12-09 02:47:03 UTC - Exception fetching window 2023-01-01–2025-12-08 (attempt 3): The request failed: Google returned a response with code 429
+2025-12-09 02:48:04 UTC - Exception fetching window 2023-01-01–2025-12-08 (attempt 4): The request failed: Google returned a response with code 429
+2025-12-09 02:49:24 UTC - Exception fetching window 2023-01-01–2025-12-08 (attempt 5): The request failed: Google returned a response with code 429
+2025-12-09 02:49:24 UTC - Saved stitched weekly file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_weekly/raw_weekly/CV_format_weekly.csv
+2025-12-09 02:49:24 UTC - SUCCESS weekly: CV format
