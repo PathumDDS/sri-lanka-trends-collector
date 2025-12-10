@@ -8,8 +8,8 @@ from pytrends.request import TrendReq
 import pandas as pd
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-KEYWORDS_DIR = os.path.join(ROOT, "keywords")
-DATA_DIR = os.path.join(ROOT, "data", "raw")
+KEYWORDS_DIR = os.path.join(ROOT, "keywords_monthly")
+DATA_DIR = os.path.join(ROOT, "data_monthly", "raw")
 LOGS_DIR = os.path.join(ROOT, "logs")
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(LOGS_DIR, exist_ok=True)
