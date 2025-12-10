@@ -1,9 +1,9 @@
 # script/merge_files.py
 import os, glob, pandas as pd
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-DATA_DIR = os.path.join(ROOT, "data", "raw")
-MERGED_DIR = os.path.join(ROOT, "data", "merged")
-KEYDIR = os.path.join(ROOT, "keywords")
+DATA_DIR = os.path.join(ROOT, "data_monthly", "raw")
+MERGED_DIR = os.path.join(ROOT, "data_monthly", "merged")
+KEYDIR = os.path.join(ROOT, "keywords_monthly")
 PROCED = os.path.join(KEYDIR, "processed.txt")
 os.makedirs(MERGED_DIR, exist_ok=True)
 
