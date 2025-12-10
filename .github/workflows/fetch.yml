@@ -32,7 +32,7 @@ jobs:
         run: |
           python script/fetch_one_keyword.py
 
-      - name: Merge all data
+      - name: Merge all monthly data
         id: merge
         run: |
           python script/merge_files.py
@@ -41,8 +41,8 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/ keywords/ logs/ || true
-          git diff --cached --quiet || (git commit -m "Auto: fetched & merged at $(date -u +'%Y-%m-%d %H:%M UTC')" && git push origin HEAD:main)
+          git add data_monthly/ keywords_monthly/ logs/ || true
+          git diff --cached --quiet || (git commit -m "Auto: monthly fetch & merge at $(date -u +'%Y-%m-%d %H:%M UTC')" && git push origin HEAD:main)
 
       - name: Send email notification
         if: always()
@@ -52,19 +52,19 @@ jobs:
           server_port: ${{ secrets.EMAIL_SMTP_PORT }}
           username: ${{ secrets.EMAIL_SMTP_USERNAME }}
           password: ${{ secrets.EMAIL_SMTP_PASSWORD }}
-          subject: "Google Trends run: ${{ github.repository }} (Run ${{ github.run_id }})"
+          subject: "Google Trends Monthly Run: ${{ github.repository }} (Run ${{ github.run_id }})"
           to: ${{ secrets.EMAIL_TO }}
           from: "${{ secrets.EMAIL_SMTP_USERNAME }}"
           body: |
-            Google Trends Fetch Report
-            --------------------------
+            Google Trends Monthly Fetch Report
+            -------------------------------------
             Repository: ${{ github.repository }}
             Run ID: ${{ github.run_id }}
 
             SUMMARY:
               Workflow: ${{ github.workflow }}
-              Event: ${{ github.event_name }}
-              Commit: ${{ github.sha }}
+              Event:   ${{ github.event_name }}
+              Commit:  ${{ github.sha }}
 
             LAST 20 LOG ENTRIES:
             -------------------------------------
@@ -72,16 +72,17 @@ jobs:
 
             FILE SYSTEM STATUS:
             -------------------------------------
-            $(ls -R data/raw || true)
+            $(ls -R data_monthly/raw || true)
 
             MERGED OUTPUT:
             -------------------------------------
-            $(ls data/merged || true)
+            $(ls data_monthly/merged || true)
 
             KEYWORD STATUS:
-              processed: $(wc -l < keywords/processed.txt)
-              unprocessed: $(wc -l < keywords/unprocessed.txt)
-              failed: $(wc -l < keywords/failed.txt)
+              processed: $(wc -l < keywords_monthly/processed.txt)
+              unprocessed: $(wc -l < keywords_monthly/unprocessed.txt)
+              failed: $(wc -l < keywords_monthly/failed.txt)
 
             ACTION LOG:
             https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}
+
