@@ -788,3 +788,11 @@
 2025-11-20 05:50:59 UTC - No unprocessed keywords remaining. Exiting.
 2025-11-20 05:50:59 UTC - Run finished.
 
+2025-12-10 10:15:20 UTC - Selected keyword: Bentota hotel
+2025-12-10 10:15:20 UTC - Attempt 1 failed for 'Bentota hotel': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-10 10:16:21 UTC - Attempt 2 failed for 'Bentota hotel': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-10 10:18:21 UTC - Attempt 3 failed for 'Bentota hotel': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-10 10:22:22 UTC - Attempt 4 failed for 'Bentota hotel': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-10 10:30:22 UTC - FAILED for Bentota hotel: error_final: The request failed: Google returned a response with code 429
+2025-12-10 10:30:22 UTC - Run finished.
+
