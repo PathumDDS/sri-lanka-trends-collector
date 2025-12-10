@@ -6,9 +6,9 @@ import os, glob, sys
 import pandas as pd
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-KEYDIR = os.path.join(ROOT, "keywords")
-DATA_RAW = os.path.join(ROOT, "data", "raw")
-DATA_MERGED_DIR = os.path.join(ROOT, "data", "merged")
+KEYDIR = os.path.join(ROOT, "keywords_monthly")
+DATA_RAW = os.path.join(ROOT, "data_monthly", "raw")
+DATA_MERGED_DIR = os.path.join(ROOT, "data_monthly", "merged")
 
 MASTER = os.path.join(KEYDIR, "all_keywords.txt")
 UNPRO = os.path.join(KEYDIR, "unprocessed.txt")
