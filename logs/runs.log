@@ -952,3 +952,11 @@
 2025-12-11 14:14:24 UTC - SUCCESS: cement price
 2025-12-11 14:14:24 UTC - Run finished.
 
+2025-12-11 14:36:26 UTC - Selected keyword: cement price Sri Lanka
+2025-12-11 14:36:27 UTC - Attempt 1 failed for 'cement price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 14:37:27 UTC - Attempt 2 failed for 'cement price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 14:39:28 UTC - Attempt 3 failed for 'cement price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-11 14:43:28 UTC - Attempt 4 failed for 'cement price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-11 14:51:29 UTC - FAILED for cement price Sri Lanka: error_final: The request failed: Google returned a response with code 429
+2025-12-11 14:51:29 UTC - Run finished.
+
