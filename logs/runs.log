@@ -915,3 +915,11 @@
 2025-12-11 11:30:48 UTC - SUCCESS: air ticket price Sri Lanka
 2025-12-11 11:30:48 UTC - Run finished.
 
+2025-12-11 11:41:30 UTC - Selected keyword: bank jobs Sri Lanka
+2025-12-11 11:41:31 UTC - Attempt 1 failed for 'bank jobs Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 11:42:31 UTC - Attempt 2 failed for 'bank jobs Sri Lanka': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 11:44:32 UTC - Attempt 3 failed for 'bank jobs Sri Lanka': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-11 11:48:32 UTC - Attempt 4 failed for 'bank jobs Sri Lanka': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-11 11:56:33 UTC - FAILED for bank jobs Sri Lanka: error_final: The request failed: Google returned a response with code 429
+2025-12-11 11:56:33 UTC - Run finished.
+
