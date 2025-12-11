@@ -22,7 +22,7 @@ RUN_LOG = os.path.join(LOGS_DIR, "runs.log")
 
 # Config
 GEO = "LK"
-START_DATE = "2008-01-01"
+START_DATE = "2015-01-01"
 TIMEFRAME = f"{START_DATE} {datetime.utcnow().strftime('%Y-%m-%d')}"
 TZ = 330  # Sri Lanka +5:30
 MAX_RETRIES = 5
