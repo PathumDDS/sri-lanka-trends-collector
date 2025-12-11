@@ -863,3 +863,8 @@
 2025-12-11 08:12:30 UTC - FAILED for Shell price Sri Lanka: error_final: The request failed: Google returned a response with code 429
 2025-12-11 08:12:30 UTC - Run finished.
 
+2025-12-11 08:49:03 UTC - Selected keyword: Sigiriya ticket
+2025-12-11 08:49:03 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/Sigiriya_ticket_20251211_0849.csv
+2025-12-11 08:49:03 UTC - SUCCESS: Sigiriya ticket
+2025-12-11 08:49:03 UTC - Run finished.
+
