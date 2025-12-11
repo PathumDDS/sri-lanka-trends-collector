@@ -868,3 +868,9 @@
 2025-12-11 08:49:03 UTC - SUCCESS: Sigiriya ticket
 2025-12-11 08:49:03 UTC - Run finished.
 
+2025-12-11 09:15:46 UTC - Selected keyword: Singer Sri Lanka
+2025-12-11 09:15:47 UTC - Attempt 1 failed for 'Singer Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 09:16:47 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/Singer_Sri_Lanka_20251211_0916.csv
+2025-12-11 09:16:47 UTC - SUCCESS: Singer Sri Lanka
+2025-12-11 09:16:47 UTC - Run finished.
+
