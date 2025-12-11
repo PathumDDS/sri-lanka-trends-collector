@@ -855,3 +855,11 @@
 2025-12-11 07:49:42 UTC - FAILED for SLTB jobs: empty
 2025-12-11 07:49:42 UTC - Run finished.
 
+2025-12-11 07:57:28 UTC - Selected keyword: Shell price Sri Lanka
+2025-12-11 07:57:28 UTC - Attempt 1 failed for 'Shell price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 07:58:28 UTC - Attempt 2 failed for 'Shell price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 08:00:29 UTC - Attempt 3 failed for 'Shell price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-11 08:04:29 UTC - Attempt 4 failed for 'Shell price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-11 08:12:30 UTC - FAILED for Shell price Sri Lanka: error_final: The request failed: Google returned a response with code 429
+2025-12-11 08:12:30 UTC - Run finished.
+
