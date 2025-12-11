@@ -947,3 +947,8 @@
 2025-12-11 14:04:39 UTC - FAILED for bus timetable Sri Lanka: error_final: The request failed: Google returned a response with code 429
 2025-12-11 14:04:39 UTC - Run finished.
 
+2025-12-11 14:14:24 UTC - Selected keyword: cement price
+2025-12-11 14:14:24 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/cement_price_20251211_1414.csv
+2025-12-11 14:14:24 UTC - SUCCESS: cement price
+2025-12-11 14:14:24 UTC - Run finished.
+
