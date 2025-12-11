@@ -939,3 +939,11 @@
 2025-12-11 13:25:48 UTC - FAILED for building materials: error_final: The request failed: Google returned a response with code 429
 2025-12-11 13:25:48 UTC - Run finished.
 
+2025-12-11 13:49:37 UTC - Selected keyword: bus timetable Sri Lanka
+2025-12-11 13:49:37 UTC - Attempt 1 failed for 'bus timetable Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 13:50:37 UTC - Attempt 2 failed for 'bus timetable Sri Lanka': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 13:52:38 UTC - Attempt 3 failed for 'bus timetable Sri Lanka': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-11 13:56:38 UTC - Attempt 4 failed for 'bus timetable Sri Lanka': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-11 14:04:39 UTC - FAILED for bus timetable Sri Lanka: error_final: The request failed: Google returned a response with code 429
+2025-12-11 14:04:39 UTC - Run finished.
+
