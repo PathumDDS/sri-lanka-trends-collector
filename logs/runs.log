@@ -804,3 +804,8 @@
 2025-12-10 17:37:40 UTC - FAILED for Bentota hotel: error_final: The request failed: Google returned a response with code 429
 2025-12-10 17:37:40 UTC - Run finished.
 
+2025-12-11 03:23:40 UTC - Selected keyword: CV format
+2025-12-11 03:23:42 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/CV_format_20251211_0323.csv
+2025-12-11 03:23:42 UTC - SUCCESS: CV format
+2025-12-11 03:23:42 UTC - Run finished.
+
