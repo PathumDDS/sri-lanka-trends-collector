@@ -984,3 +984,11 @@
 2025-12-11 15:53:53 UTC - FAILED for cost of living: error_final: The request failed: Google returned a response with code 429
 2025-12-11 15:53:53 UTC - Run finished.
 
+2025-12-11 16:15:42 UTC - Selected keyword: credit card Sri Lanka
+2025-12-11 16:15:43 UTC - Attempt 1 failed for 'credit card Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 16:16:43 UTC - Attempt 2 failed for 'credit card Sri Lanka': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 16:18:43 UTC - Attempt 3 failed for 'credit card Sri Lanka': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-11 16:22:44 UTC - Attempt 4 failed for 'credit card Sri Lanka': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-11 16:30:44 UTC - FAILED for credit card Sri Lanka: error_final: The request failed: Google returned a response with code 429
+2025-12-11 16:30:44 UTC - Run finished.
+
