@@ -2,8 +2,7 @@ name: Google Trends - Fetch and Merge
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: "*/15 * * * *"
+
 
 jobs:
   fetch:
