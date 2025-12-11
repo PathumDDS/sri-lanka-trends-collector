@@ -996,3 +996,11 @@
 2025-12-11 16:53:37 UTC - FAILED for crop insurance Sri Lanka: empty
 2025-12-11 16:53:37 UTC - Run finished.
 
+2025-12-11 17:17:47 UTC - Selected keyword: customs clearance Sri Lanka
+2025-12-11 17:17:48 UTC - Attempt 1 failed for 'customs clearance Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 17:18:48 UTC - Attempt 2 failed for 'customs clearance Sri Lanka': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 17:20:48 UTC - Attempt 3 failed for 'customs clearance Sri Lanka': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-11 17:24:49 UTC - Attempt 4 failed for 'customs clearance Sri Lanka': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-11 17:32:49 UTC - FAILED for customs clearance Sri Lanka: error_final: The request failed: Google returned a response with code 429
+2025-12-11 17:32:49 UTC - Run finished.
+
