@@ -884,3 +884,9 @@
 2025-12-11 09:54:38 UTC - SUCCESS: Sri Lanka hotels
 2025-12-11 09:54:38 UTC - Run finished.
 
+2025-12-11 10:12:14 UTC - Selected keyword: Sri Lanka visa
+2025-12-11 10:12:14 UTC - Attempt 1 failed for 'Sri Lanka visa': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 10:13:15 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/Sri_Lanka_visa_20251211_1013.csv
+2025-12-11 10:13:15 UTC - SUCCESS: Sri Lanka visa
+2025-12-11 10:13:15 UTC - Run finished.
+
