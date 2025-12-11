@@ -968,3 +968,11 @@
 2025-12-11 15:07:50 UTC - FAILED for coconut price Sri Lanka: error_final: The request failed: Google returned a response with code 429
 2025-12-11 15:07:50 UTC - Run finished.
 
+2025-12-11 15:12:43 UTC - Selected keyword: construction cost
+2025-12-11 15:12:44 UTC - Attempt 1 failed for 'construction cost': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 15:13:44 UTC - Attempt 2 failed for 'construction cost': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 15:15:44 UTC - Attempt 3 failed for 'construction cost': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-11 15:19:45 UTC - Attempt 4 failed for 'construction cost': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-11 15:27:45 UTC - FAILED for construction cost: error_final: The request failed: Google returned a response with code 429
+2025-12-11 15:27:45 UTC - Run finished.
+
