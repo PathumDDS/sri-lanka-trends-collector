@@ -834,3 +834,10 @@
 2025-12-11 05:55:03 UTC - SUCCESS: Ella Sri Lanka
 2025-12-11 05:55:03 UTC - Run finished.
 
+2025-12-11 06:24:08 UTC - Selected keyword: Govt job exam
+2025-12-11 06:24:09 UTC - Attempt 1 failed for 'Govt job exam': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 06:25:09 UTC - Attempt 2 failed for 'Govt job exam': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 06:27:10 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/Govt_job_exam_20251211_0627.csv
+2025-12-11 06:27:10 UTC - SUCCESS: Govt job exam
+2025-12-11 06:27:10 UTC - Run finished.
+
