@@ -909,3 +909,9 @@
 2025-12-11 11:10:32 UTC - SUCCESS: Uber Sri Lanka
 2025-12-11 11:10:32 UTC - Run finished.
 
+2025-12-11 11:29:47 UTC - Selected keyword: air ticket price Sri Lanka
+2025-12-11 11:29:48 UTC - Attempt 1 failed for 'air ticket price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 11:30:48 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/air_ticket_price_Sri_Lanka_20251211_1130.csv
+2025-12-11 11:30:48 UTC - SUCCESS: air ticket price Sri Lanka
+2025-12-11 11:30:48 UTC - Run finished.
+
