@@ -890,3 +890,10 @@
 2025-12-11 10:13:15 UTC - SUCCESS: Sri Lanka visa
 2025-12-11 10:13:15 UTC - Run finished.
 
+2025-12-11 10:41:14 UTC - Selected keyword: TV price Sri Lanka
+2025-12-11 10:41:15 UTC - Attempt 1 failed for 'TV price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 10:42:16 UTC - Attempt 2 failed for 'TV price Sri Lanka': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 10:44:17 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/TV_price_Sri_Lanka_20251211_1044.csv
+2025-12-11 10:44:17 UTC - SUCCESS: TV price Sri Lanka
+2025-12-11 10:44:17 UTC - Run finished.
+
