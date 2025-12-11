@@ -976,3 +976,11 @@
 2025-12-11 15:27:45 UTC - FAILED for construction cost: error_final: The request failed: Google returned a response with code 429
 2025-12-11 15:27:45 UTC - Run finished.
 
+2025-12-11 15:38:51 UTC - Selected keyword: cost of living
+2025-12-11 15:38:52 UTC - Attempt 1 failed for 'cost of living': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 15:39:52 UTC - Attempt 2 failed for 'cost of living': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 15:41:52 UTC - Attempt 3 failed for 'cost of living': The request failed: Google returned a response with code 429. Backing off 240s
+2025-12-11 15:45:53 UTC - Attempt 4 failed for 'cost of living': The request failed: Google returned a response with code 429. Backing off 480s
+2025-12-11 15:53:53 UTC - FAILED for cost of living: error_final: The request failed: Google returned a response with code 429
+2025-12-11 15:53:53 UTC - Run finished.
+
