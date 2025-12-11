@@ -897,3 +897,10 @@
 2025-12-11 10:44:17 UTC - SUCCESS: TV price Sri Lanka
 2025-12-11 10:44:17 UTC - Run finished.
 
+2025-12-11 10:54:18 UTC - Selected keyword: Tokyo Cement price
+2025-12-11 10:54:19 UTC - Attempt 1 failed for 'Tokyo Cement price': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-11 10:55:19 UTC - Attempt 2 failed for 'Tokyo Cement price': The request failed: Google returned a response with code 429. Backing off 120s
+2025-12-11 10:57:20 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/Tokyo_Cement_price_20251211_1057.csv
+2025-12-11 10:57:20 UTC - SUCCESS: Tokyo Cement price
+2025-12-11 10:57:20 UTC - Run finished.
+
