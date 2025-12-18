@@ -1142,3 +1142,9 @@
 2025-12-18 13:54:16 UTC - SUCCESS: budget Sri Lanka
 2025-12-18 13:54:16 UTC - Run finished.
 
+2025-12-18 14:20:14 UTC - Selected keyword: building materials
+2025-12-18 14:20:15 UTC - Attempt 1 failed for 'building materials': The request failed: Google returned a response with code 429. Backing off 60s
+2025-12-18 14:21:15 UTC - Saved file: /home/runner/work/sri-lanka-trends-collector/sri-lanka-trends-collector/data_monthly/raw/building_materials_20251218_1421.csv
+2025-12-18 14:21:15 UTC - SUCCESS: building materials
+2025-12-18 14:21:15 UTC - Run finished.
+
