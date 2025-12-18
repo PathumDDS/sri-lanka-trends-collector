@@ -23,10 +23,20 @@ RUN_LOG = os.path.join(LOGS_DIR, "runs.log")
 # Config
 GEO = "LK"
 START_DATE = "2015-01-01"
-TIMEFRAME = f"{START_DATE} {datetime.utcnow().strftime('%Y-%m-%d')}"
+
+from datetime import datetime, timedelta
+
+def last_day_of_previous_month():
+    today = datetime.utcnow().replace(day=1)
+    last_month_end = today - timedelta(days=1)
+    return last_month_end.strftime("%Y-%m-%d")
+
+END_DATE = last_day_of_previous_month()
+TIMEFRAME = f"{START_DATE} {END_DATE}"
+
 TZ = 330  # Sri Lanka +5:30
 MAX_RETRIES = 5
-INITIAL_BACKOFF = 60  # seconds; will exponentially increase
+INITIAL_BACKOFF = 60
 
 def append_line(path, line):
     with open(path, "a", encoding="utf-8") as f:
