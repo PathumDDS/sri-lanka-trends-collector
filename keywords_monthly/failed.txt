@@ -3,3 +3,4 @@ export crops price
 landslide warning Sri Lanka
 public exam dates Sri Lanka
 rainfall forecast Sri Lanka
+rainfall warning Sri Lanka
